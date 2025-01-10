@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 type MiddlewareType struct {
@@ -31,6 +32,7 @@ type MiddlewareType struct {
 	Throttle             func(limit int) func(http.Handler) http.Handler
 	Timeout              func(timeout time.Duration) func(next http.Handler) http.Handler
 	URLFormat            func(next http.Handler) http.Handler
+	Cors                 func(options cors.Options) func(next http.Handler) http.Handler
 }
 
 // Middleware is a collection of middleware functions used in the application.
@@ -56,6 +58,7 @@ type MiddlewareType struct {
 // - Throttle: middleware for throttling HTTP requests.
 // - Timeout: middleware for setting a timeout for HTTP requests.
 // - URLFormat: middleware for handling URL format.
+// - Cors: middleware for controlling CORS
 var Middleware = MiddlewareType{
 	BasicAuth:            middleware.BasicAuth,
 	Logger:               middleware.Logger,
@@ -78,4 +81,5 @@ var Middleware = MiddlewareType{
 	Throttle:             middleware.Throttle,
 	Timeout:              middleware.Timeout,
 	URLFormat:            middleware.URLFormat,
+	Cors:                 cors.Handler,
 }

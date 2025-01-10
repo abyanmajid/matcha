@@ -4,15 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
-
-// New creates and returns a new instance of .Mux by initializing
-// and configuring the  router.
-func New() *chi.Mux {
-	return chi.NewRouter()
-}
 
 // Resource represents an HTTP resource with a specific route and handler.
 // Route is the URL path for the resource.
@@ -76,23 +68,23 @@ func NewResource[Req any, Res any](routePattern string, handler Handler[Req, Res
 
 		if !isEmptyStruct {
 			if r.ContentLength == 0 {
-				WriteErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
+				writeErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
 				return
 			}
 
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
-				WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
+				writeErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
 				return
 			}
 		}
 
 		res := handler(r, reqBody)
 		if res.Error != nil {
-			WriteErrorJSON(w, res.Error, http.StatusBadRequest)
+			writeErrorJSON(w, res.Error, http.StatusBadRequest)
 			return
 		}
 
-		WriteJSON(w, res.Response, res.StatusCode)
+		writeJSON(w, res.Response, res.StatusCode)
 	}
 
 	return &Resource{

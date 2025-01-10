@@ -2,34 +2,22 @@ package matcha
 
 import (
 	"encoding/json"
-	"errors"
-	"io"
 	"log/slog"
 	"net/http"
 )
 
-func ReadJSON(w http.ResponseWriter, r *http.Request, data any) error {
-	maxBytes := 1048576 // one megabyte
-
-	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
-
-	dec := json.NewDecoder(r.Body)
-	err := dec.Decode(data)
-	if err != nil {
-		slog.Error("Failed to parse request body as JSON.")
-		return err
-	}
-
-	err = dec.Decode(&struct{}{})
-	if err != io.EOF {
-		slog.Error("Failed to parse request body as JSON.")
-		return errors.New("body must have only a single JSON value")
-	}
-
-	return nil
-}
-
-func WriteJSON(w http.ResponseWriter, data any, status int, headers ...http.Header) error {
+// writeJSON writes the given data as JSON to the provided http.ResponseWriter.
+// It sets the response status code and optional headers.
+//
+// Parameters:
+//   - w: The http.ResponseWriter to write the JSON response to.
+//   - data: The data to be marshaled into JSON and written to the response.
+//   - status: The HTTP status code to set for the response.
+//   - headers: Optional additional headers to set on the response.
+//
+// Returns:
+//   - error: An error if JSON marshaling or writing to the response fails.
+func writeJSON(w http.ResponseWriter, data any, status int, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -51,7 +39,18 @@ func WriteJSON(w http.ResponseWriter, data any, status int, headers ...http.Head
 	return nil
 }
 
-func WriteErrorJSON(w http.ResponseWriter, err error, status ...int) error {
+// writeErrorJSON writes an error message in JSON format to the provided http.ResponseWriter.
+// It logs the error message using slog.Debug and sets the HTTP status code to the provided status code
+// or defaults to http.StatusBadRequest if no status code is provided.
+//
+// Parameters:
+//   - w: The http.ResponseWriter to write the JSON response to.
+//   - err: The error to be written in the JSON response.
+//   - status: Optional variadic parameter to specify the HTTP status code.
+//
+// Returns:
+//   - An error if there is an issue writing the JSON response.
+func writeErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	slog.Debug(err.Error())
 
 	statusCode := http.StatusBadRequest
@@ -64,5 +63,5 @@ func WriteErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 		"error": err.Error(),
 	}
 
-	return WriteJSON(w, response, statusCode)
+	return writeJSON(w, response, statusCode)
 }
