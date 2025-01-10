@@ -17,8 +17,11 @@ type Matcha struct {
 // New creates and returns a new instance of .Mux by initializing
 // and configuring the  router.
 func New() *Matcha {
+	mux := chi.NewRouter()
+	mux.Use(defaultPanicRecovery)
+
 	return &Matcha{
-		mux: chi.NewRouter(),
+		mux: mux,
 	}
 }
 
@@ -191,4 +194,32 @@ func (r *Matcha) Route(pattern string, fn func(r Matcha)) Matcha {
 // if you define two Mount() routes on the exact same pattern the mount will panic.
 func (r *Matcha) Mount(pattern string, handler http.Handler) {
 	r.mux.Mount(pattern, handler)
+}
+
+// defaultPanicRecovery is a middleware that recovers from any panics and writes
+// a JSON error response with a 500 Internal Server Error status code.
+// It wraps the provided http.Handler and ensures that any panic that occurs
+// during the request handling is caught and handled gracefully.
+//
+// Parameters:
+//   - next: The next http.Handler to be called in the middleware chain.
+//
+// Returns:
+//   - http.Handler: A new http.Handler that includes panic recovery.
+func defaultPanicRecovery(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if err := recover(); err != nil {
+				logger.Error("An internal error occurred while handling request %v: (IP %s), (Method: %s), (URL: %s), (Error: %v)",
+					err,
+					r.RemoteAddr,
+					r.Method,
+					r.URL.Path,
+					err)
+
+				internal.WriteErrorJSON(w, errors.New("something went wrong"), http.StatusInternalServerError)
+			}
+		}()
+		next.ServeHTTP(w, r)
+	})
 }
