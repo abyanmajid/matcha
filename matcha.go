@@ -55,7 +55,7 @@ func (r *Matcha) Method(method, pattern string, handler http.Handler) {
 // MethodFunc adds the route `pattern` that matches `method` http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (r *Matcha) MethodFunc(method, pattern string, handlerFn http.HandlerFunc) {
-	r.MethodFunc(method, pattern, handlerFn)
+	r.mux.MethodFunc(method, pattern, handlerFn)
 }
 
 // Connect adds the route `pattern` that matches a CONNECT http method to

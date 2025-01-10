@@ -1,4 +1,4 @@
-package matcha
+package internal
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// writeJSON writes the given data as JSON to the provided http.ResponseWriter.
+// WriteJSON writes the given data as JSON to the provided http.ResponseWriter.
 // It sets the response status code and optional headers.
 //
 // Parameters:
@@ -17,7 +17,7 @@ import (
 //
 // Returns:
 //   - error: An error if JSON marshaling or writing to the response fails.
-func writeJSON(w http.ResponseWriter, data any, status int, headers ...http.Header) error {
+func WriteJSON(w http.ResponseWriter, data any, status int, headers ...http.Header) error {
 	out, err := json.Marshal(data)
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func writeJSON(w http.ResponseWriter, data any, status int, headers ...http.Head
 	return nil
 }
 
-// writeErrorJSON writes an error message in JSON format to the provided http.ResponseWriter.
+// WriteErrorJSON writes an error message in JSON format to the provided http.ResponseWriter.
 // It logs the error message using slog.Debug and sets the HTTP status code to the provided status code
 // or defaults to http.StatusBadRequest if no status code is provided.
 //
@@ -50,7 +50,7 @@ func writeJSON(w http.ResponseWriter, data any, status int, headers ...http.Head
 //
 // Returns:
 //   - An error if there is an issue writing the JSON response.
-func writeErrorJSON(w http.ResponseWriter, err error, status ...int) error {
+func WriteErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	slog.Debug(err.Error())
 
 	statusCode := http.StatusBadRequest
@@ -63,5 +63,5 @@ func writeErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 		"error": err.Error(),
 	}
 
-	return writeJSON(w, response, statusCode)
+	return WriteJSON(w, response, statusCode)
 }

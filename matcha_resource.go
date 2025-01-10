@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+
+	"github.com/abyanmajid/matcha/internal"
 )
 
 // Resource represents an HTTP resource with a specific route and handler.
@@ -68,23 +70,23 @@ func NewResource[Req any, Res any](routePattern string, handler Handler[Req, Res
 
 		if !isEmptyStruct {
 			if r.ContentLength == 0 {
-				writeErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
+				internal.WriteErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
 				return
 			}
 
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
-				writeErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
+				internal.WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
 				return
 			}
 		}
 
 		res := handler(r, reqBody)
 		if res.Error != nil {
-			writeErrorJSON(w, res.Error, http.StatusBadRequest)
+			internal.WriteErrorJSON(w, res.Error, http.StatusBadRequest)
 			return
 		}
 
-		writeJSON(w, res.Response, res.StatusCode)
+		internal.WriteJSON(w, res.Response, res.StatusCode)
 	}
 
 	return &Resource{
