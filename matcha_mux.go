@@ -1,6 +1,7 @@
 package matcha
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -118,10 +119,32 @@ func (r *Matcha) NotFound(handlerFn http.HandlerFunc) {
 	r.mux.NotFound(handlerFn)
 }
 
+// NotFoundJSON sets a custom handler for returning JSON responses when paths
+// cannot be found. The default response returns a 404 status with a JSON body.
+func (r *Matcha) NotFoundJSON() {
+	r.mux.NotFound(func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		response := map[string]string{"error": "not found", "message": "The requested resource could not be found."}
+		json.NewEncoder(w).Encode(response)
+	})
+}
+
 // MethodNotAllowed sets a custom http.HandlerFunc for routing paths where the
 // method is unresolved. The default handler returns a 405 with an empty body.
 func (r *Matcha) MethodNotAllowed(handlerFn http.HandlerFunc) {
 	r.mux.MethodNotAllowed(handlerFn)
+}
+
+// MethodNotAllowedJSON sets a custom handler for returning JSON responses when
+// a method is not allowed. The default response returns a 405 status with a JSON body.
+func (r *Matcha) MethodNotAllowedJSON() {
+	r.mux.MethodNotAllowed(func(w http.ResponseWriter, req *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		response := map[string]string{"error": "method not allowed", "message": "The HTTP method is not supported for this route."}
+		json.NewEncoder(w).Encode(response)
+	})
 }
 
 // With adds inline middlewares for an endpoint handler.
