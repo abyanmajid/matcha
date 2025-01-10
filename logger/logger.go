@@ -1,4 +1,4 @@
-package matcha
+package logger
 
 import (
 	"fmt"
@@ -9,7 +9,8 @@ import (
 )
 
 var infoColor = color.New(color.FgGreen).Add(color.Bold).SprintFunc()
-var debugColor = color.New(color.FgBlue).Add(color.Bold).SprintFunc()
+var debugColor = color.New(color.FgHiMagenta).Add(color.Bold).SprintFunc()
+var traceColor = color.New(color.FgYellow).Add(color.Bold).SprintFunc()
 var errorColor = color.New(color.FgRed).Add(color.Bold).SprintFunc()
 
 func syslogToStdout(level, format string, args ...any) {
@@ -18,20 +19,22 @@ func syslogToStdout(level, format string, args ...any) {
 	fmt.Fprintf(os.Stdout, "%s [%s] %s\n", timestamp, level, logMessage)
 }
 
-// Logger represents a structured logger with levels: Info, Debug, and Error.
-type Logger struct{}
-
 // Log information at the INFO severity level
-func (l *Logger) Info(format string, args ...any) {
+func Info(format string, args ...any) {
 	syslogToStdout(infoColor("INFO"), format, args...)
 }
 
 // Log information at the DEBUG severity level
-func (l *Logger) Debug(format string, args ...any) {
+func Debug(format string, args ...any) {
 	syslogToStdout(debugColor("DEBUG"), format, args...)
 }
 
+// Log information at the DEBUG severity level
+func Trace(format string, args ...any) {
+	syslogToStdout(traceColor("TRACE"), format, args...)
+}
+
 // Log information at the ERROR severity level
-func (l *Logger) Error(format string, args ...any) {
+func Error(format string, args ...any) {
 	syslogToStdout(errorColor("ERROR"), format, args...)
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/abyanmajid/matcha/internal"
+	"github.com/abyanmajid/matcha/logger"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -22,6 +24,16 @@ func New() *Matcha {
 
 // Serve mux on a given local address
 func (r *Matcha) Serve(addr string) {
+	port, err := internal.GetPortFromAddr(addr)
+	if err != nil {
+		logger.Error(err.Error())
+		return
+	}
+
+	internal.PrintIntro()
+
+	logger.Info("A Matcha web server is now running on port %s... 🌿", port)
+
 	http.ListenAndServe(addr, r.mux)
 }
 

@@ -2,8 +2,13 @@ package internal
 
 import (
 	"encoding/json"
+	"fmt"
 	"log/slog"
+	"net"
 	"net/http"
+	"strings"
+
+	"github.com/common-nighthawk/go-figure"
 )
 
 // WriteJSON writes the given data as JSON to the provided http.ResponseWriter.
@@ -64,4 +69,22 @@ func WriteErrorJSON(w http.ResponseWriter, err error, status ...int) error {
 	}
 
 	return WriteJSON(w, response, statusCode)
+}
+
+func GetPortFromAddr(addr string) (string, error) {
+	if !strings.Contains(addr, ":") {
+		addr = "localhost:" + addr
+	}
+
+	_, port, err := net.SplitHostPort(addr)
+	if err != nil {
+		return "", fmt.Errorf("invalid address format: %s", addr)
+	}
+
+	return port, nil
+}
+
+func PrintIntro() {
+	figure.NewColorFigure("matcha", "puffy", "green", true).Print()
+	fmt.Println("\n")
 }

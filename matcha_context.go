@@ -28,7 +28,6 @@ type Ctx[Req any] struct {
 	Response http.ResponseWriter
 	Cookies  Cookies
 	Body     Req
-	Logger   Logger
 }
 
 // Cookies abstraction
