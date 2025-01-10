@@ -528,7 +528,8 @@ func methodNotAllowedHandler(methodsAllowed ...methodTyp) func(w http.ResponseWr
 	}
 }
 
-func (mx *Mux) Serve(port int) {
-	addr := fmt.Sprintf(":%d", port)
+func (mx *Mux) Serve(addr string) {
+	art := MatchaArt(addr)
+	art.PrintIntro()
 	http.ListenAndServe(addr, mx)
 }

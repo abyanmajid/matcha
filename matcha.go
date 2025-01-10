@@ -2,6 +2,7 @@ package matcha
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/abyanmajid/matcha/internal"
@@ -75,25 +76,23 @@ func NewResource[Req any, Res any](routePattern string, handler Handler[Req, Res
 
 		if !isEmptyStruct {
 			if r.ContentLength == 0 {
-				http.Error(w, "missing request body", http.StatusBadRequest)
+				internal.WriteErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
 				return
 			}
 
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
-				http.Error(w, "invalid request body", http.StatusBadRequest)
+				internal.WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
 				return
 			}
 		}
 
 		res := handler(r, reqBody)
 		if res.Error != nil {
-			http.Error(w, res.Error.Error(), res.StatusCode)
+			internal.WriteErrorJSON(w, res.Error, http.StatusBadRequest)
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(res.StatusCode)
-		json.NewEncoder(w).Encode(res.Response)
+		internal.WriteJSON(w, res.Response, res.StatusCode)
 	}
 
 	return &Resource{
