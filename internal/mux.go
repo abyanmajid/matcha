@@ -529,6 +529,6 @@ func methodNotAllowedHandler(methodsAllowed ...methodTyp) func(w http.ResponseWr
 }
 
 func (mx *Mux) Serve(port int) {
-	addr := fmt.Sprintf("%d", port)
+	addr := fmt.Sprintf(":%d", port)
 	http.ListenAndServe(addr, mx)
 }

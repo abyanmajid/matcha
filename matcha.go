@@ -21,6 +21,8 @@ type Resource struct {
 	Handler http.HandlerFunc
 }
 
+type NoRequest struct{}
+
 // Response is a generic struct that encapsulates a response of type Res.
 // It includes the actual response data, an HTTP status code, and an error if one occurred.
 type Response[Res any] struct {
@@ -66,9 +68,21 @@ func NewResource[Req any, Res any](routePattern string, handler Handler[Req, Res
 	handlerFunc := func(w http.ResponseWriter, r *http.Request) {
 		var reqBody Req
 
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			http.Error(w, "invalid request body", http.StatusBadRequest)
-			return
+		isEmptyStruct := func() bool {
+			_, ok := any(reqBody).(struct{})
+			return ok
+		}()
+
+		if !isEmptyStruct {
+			if r.ContentLength == 0 {
+				http.Error(w, "missing request body", http.StatusBadRequest)
+				return
+			}
+
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
+				http.Error(w, "invalid request body", http.StatusBadRequest)
+				return
+			}
 		}
 
 		res := handler(r, reqBody)
