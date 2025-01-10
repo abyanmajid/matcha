@@ -124,22 +124,16 @@ func (r *MatchaOpenAPI) NotFound(handlerFn http.HandlerFunc) {
 	r.matcha.NotFound(handlerFn)
 }
 
-// NotFoundJSON sets a custom handler for returning JSON responses when paths
-// cannot be found. The default response returns a 404 status with a JSON body.
-func (r *MatchaOpenAPI) NotFoundJSON() {
-	r.matcha.NotFoundJSON()
+// ErrorJSON sets custom handlers for returning JSON responses when paths
+// cannot be found or method not allowed.
+func (r *MatchaOpenAPI) ErrorJSON() {
+	r.matcha.ErrorJSON()
 }
 
 // MethodNotAllowed sets a custom http.HandlerFunc for routing paths where the
 // method is unresolved. The default handler returns a 405 with an empty body.
 func (r *MatchaOpenAPI) MethodNotAllowed(handlerFn http.HandlerFunc) {
 	r.matcha.MethodNotAllowed(handlerFn)
-}
-
-// MethodNotAllowedJSON sets a custom handler for returning JSON responses when
-// a method is not allowed. The default response returns a 405 status with a JSON body.
-func (r *MatchaOpenAPI) MethodNotAllowedJSON() {
-	r.matcha.MethodNotAllowedJSON()
 }
 
 // With adds inline middlewares for an endpoint handler.

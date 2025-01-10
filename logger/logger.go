@@ -15,7 +15,7 @@ var errorColor = color.New(color.FgRed).Add(color.Bold).SprintFunc()
 
 func syslogToStdout(level, format string, args ...any) {
 	logMessage := fmt.Sprintf(format, args...)
-	timestamp := time.Now().Format("2006-01-02T15:04:05Z07:00")
+	timestamp := time.Now().Format("2006/01/02 15:04:05")
 	fmt.Fprintf(os.Stdout, "%s [%s] %s\n", timestamp, level, logMessage)
 }
 
