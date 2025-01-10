@@ -28,6 +28,7 @@ type Ctx[Req any] struct {
 	Response http.ResponseWriter
 	Cookies  Cookies
 	Body     Req
+	Logger   Logger
 }
 
 // Cookies abstraction
@@ -37,13 +38,6 @@ type Cookies struct {
 }
 
 // CookieOptions represents the options for setting a cookie.
-// Path specifies the URL path that must exist in the requested URL for the browser to send the Cookie header.
-// Domain specifies the domain for which the cookie is valid.
-// MaxAge defines the maximum age of the cookie in seconds.
-// Secure indicates whether the cookie should only be transmitted over secure protocols such as HTTPS.
-// HttpOnly indicates whether the cookie is accessible only through the HTTP protocol and not through client-side scripts.
-// SameSite controls whether a cookie is sent with cross-site requests, providing some protection against cross-site request forgery attacks.
-// Expires specifies the expiration date of the cookie.
 type CookieOptions struct {
 	Path     string
 	Domain   string
