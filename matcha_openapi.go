@@ -12,15 +12,14 @@ type MatchaOpenAPI struct {
 	docs   openapi.OpenAPIDocs
 }
 
-// NewOpenAPI creates a new instance of MatchaOpenAPI.
-// It initializes the Matcha with OpenAPI features.
+// New creates a default instance of Matcha with OpenAPI.
 //
 // Returns:
 //
 //	*MatchaOpenAPI: A pointer to the newly created MatchaOpenAPI instance.
-func NewOpenAPI() *MatchaOpenAPI {
+func New() *MatchaOpenAPI {
 	return &MatchaOpenAPI{
-		matcha: New(),
+		matcha: NewBase(),
 	}
 }
 

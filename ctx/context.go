@@ -1,4 +1,4 @@
-package internal
+package ctx
 
 import (
 	"encoding/json"
@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-// Ctx is a generic context struct that holds the HTTP request and response,
+// Request is a generic context struct that holds the HTTP request and response,
 // along with a body of type Req. It is used to pass around the HTTP request
 // and response objects, as well as any additional data needed for processing
 // the request.
@@ -23,11 +23,19 @@ import (
 //	Request  - The HTTP request object.
 //	Response - The HTTP response writer.
 //	Body     - The body data of type Req.
-type Ctx[Req any] struct {
+type Request[Req any] struct {
 	Request  *http.Request
 	Response http.ResponseWriter
 	Cookies  Cookies
 	Body     Req
+}
+
+// Response is a generic struct that encapsulates a response of type Res.
+// It includes the actual response data, an HTTP status code, and an error if one occurred.
+type Response[Res any] struct {
+	Response   Res
+	StatusCode int
+	Error      error
 }
 
 // Cookies abstraction
@@ -48,22 +56,22 @@ type CookieOptions struct {
 }
 
 // GetHeader retrieves the value of a specific HTTP header.
-func (c *Ctx[Req]) GetHeader(header string) string {
+func (c *Request[Req]) GetHeader(header string) string {
 	return c.Request.Header.Get(header)
 }
 
 // GetQueryParam retrieves the value of a specific query parameter.
-func (c *Ctx[Req]) GetQueryParam(queryParam string) string {
+func (c *Request[Req]) GetQueryParam(queryParam string) string {
 	return c.Request.URL.Query().Get(queryParam)
 }
 
 // GetPathParam retrieves a placeholder value from the URL path.
-func (c *Ctx[Req]) GetPathParam(pathParam string) string {
+func (c *Request[Req]) GetPathParam(pathParam string) string {
 	return chi.URLParam(c.Request, pathParam)
 }
 
 // GetQueryParamDefault retrieves a query parameter value or returns a default value if not found.
-func (c *Ctx[Req]) GetQueryParamDefault(queryParam, defaultValue string) string {
+func (c *Request[Req]) GetQueryParamDefault(queryParam, defaultValue string) string {
 	value := c.Request.URL.Query().Get(queryParam)
 	if value == "" {
 		return defaultValue
@@ -72,7 +80,7 @@ func (c *Ctx[Req]) GetQueryParamDefault(queryParam, defaultValue string) string 
 }
 
 // GetPathParamDefault retrieves a path parameter value or returns a default value if not found.
-func (c *Ctx[Req]) GetPathParamDefault(pathParam, defaultValue string) string {
+func (c *Request[Req]) GetPathParamDefault(pathParam, defaultValue string) string {
 	value := chi.URLParam(c.Request, pathParam)
 	if value == "" {
 		return defaultValue
@@ -81,7 +89,7 @@ func (c *Ctx[Req]) GetPathParamDefault(pathParam, defaultValue string) string {
 }
 
 // GetIP retrieves the client's IP address from the request.
-func (c *Ctx[Req]) GetIP() string {
+func (c *Request[Req]) GetIP() string {
 	xff := c.GetHeader("X-Forwarded-For")
 	if xff != "" {
 		return xff
@@ -90,29 +98,29 @@ func (c *Ctx[Req]) GetIP() string {
 }
 
 // GetForm retrieves a form via their name
-func (c *Ctx[Req]) GetForm(formName string) string {
+func (c *Request[Req]) GetForm(formName string) string {
 	return c.Request.FormValue(formName)
 }
 
 // GetFile retrieves a file from a multipart form request.
-func (c *Ctx[Req]) GetFile(fieldName string) (multipart.File, *multipart.FileHeader, error) {
+func (c *Request[Req]) GetFile(fieldName string) (multipart.File, *multipart.FileHeader, error) {
 	return c.Request.FormFile(fieldName)
 }
 
 // Redirect redirects the client to a given URL
-func (c *Ctx[Req]) Redirect(statusCode int, url string) {
+func (c *Request[Req]) Redirect(statusCode int, url string) {
 	http.Redirect(c.Response, c.Request, url, statusCode)
 }
 
 // Json writes a JSON response to the client with the specified status code.
-func (c *Ctx[Req]) Json(statusCode int, data any) error {
+func (c *Request[Req]) Json(statusCode int, data any) error {
 	c.Response.Header().Set("Content-Type", "application/json")
 	c.Response.WriteHeader(statusCode)
 	return json.NewEncoder(c.Response).Encode(data)
 }
 
 // Text writes a plain text response to the client with the specified status code.
-func (c *Ctx[Req]) Text(statusCode int, message string) {
+func (c *Request[Req]) Text(statusCode int, message string) {
 	c.Response.Header().Set("Content-Type", "text/plain")
 	c.Response.WriteHeader(statusCode)
 	c.Response.Write([]byte(message))

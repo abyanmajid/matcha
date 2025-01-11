@@ -54,11 +54,10 @@ func NewSchema(schemaType interface{}) (*ContentSchema, error) {
 	return parsedSchema, nil
 }
 
-func NewOperation(summary string, description string, requestBody RequestBody, response map[int]Response, parameters []Parameter) *Operation {
+func NewOperation(summary string, description string, requestBody RequestBody, response map[int]Response) *Operation {
 	return &Operation{
 		Summary:     summary,
 		Description: description,
-		Parameters:  parameters,
 		RequestBody: requestBody,
 		Response:    response,
 	}

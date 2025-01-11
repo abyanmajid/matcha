@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/abyanmajid/matcha/ctx"
 	"github.com/abyanmajid/matcha/internal"
 	"github.com/abyanmajid/matcha/logger"
 	"github.com/go-chi/chi/v5"
@@ -14,19 +15,19 @@ type Matcha struct {
 	mux *chi.Mux
 }
 
-type Ctx[Request any] internal.Ctx[Request]
-
-type Response[Response any] internal.Ctx[Response]
-
-// New creates and returns a new instance of .Mux by initializing
+// NewBase creates and returns a new instance of the basic Matcha Router by initializing
 // and configuring the  router.
-func New() *Matcha {
+func NewBase() *Matcha {
 	mux := chi.NewRouter()
 	mux.Use(defaultPanicRecovery)
 
-	return &Matcha{
+	matcha := &Matcha{
 		mux: mux,
 	}
+
+	matcha.ErrorJSON()
+
+	return matcha
 }
 
 // Serve mux on a given local address
@@ -181,7 +182,7 @@ func (r *Matcha) Route(pattern string, fn func(r Matcha)) Matcha {
 	if fn == nil {
 		panic(fmt.Sprintf("chi: attempting to Route() a nil subrouter on '%s'", pattern))
 	}
-	subRouter := New()
+	subRouter := NewBase()
 	fn(*subRouter)
 	r.mux.Mount(pattern, subRouter.mux)
 	return Matcha{
@@ -198,6 +199,10 @@ func (r *Matcha) Route(pattern string, fn func(r Matcha)) Matcha {
 // if you define two Mount() routes on the exact same pattern the mount will panic.
 func (r *Matcha) Mount(pattern string, handler http.Handler) {
 	r.mux.Mount(pattern, handler)
+}
+
+func Handler[Req any, Res any](handler func(c *ctx.Request[Req]) *ctx.Response[Res]) http.HandlerFunc {
+	return internal.NewHandler(handler)
 }
 
 // defaultPanicRecovery is a middleware that recovers from any panics and writes

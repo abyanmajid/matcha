@@ -1,4 +1,4 @@
-package matcha
+package internal
 
 import (
 	"bytes"
@@ -9,8 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/abyanmajid/matcha/internal"
 )
 
 const doubleQuoteSpecialChars = "\\\n\r\"!$`"
@@ -102,7 +100,7 @@ func Unmarshal(str string) (envMap map[string]string, err error) {
 // UnmarshalBytes parses env file from byte slice of chars, returning a map of keys and values.
 func UnmarshalBytes(src []byte) (map[string]string, error) {
 	out := make(map[string]string)
-	err := internal.ParseBytes(src, out)
+	err := ParseBytes(src, out)
 
 	return out, err
 }
