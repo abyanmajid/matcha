@@ -40,6 +40,6 @@ func Error(format string, args ...any) {
 }
 
 func Fatal(format string, args ...any) {
-	Error(format, args...)
+	syslogToStdout(errorColor("FATAL: TERMINATING"), format, args...)
 	os.Exit(1)
 }

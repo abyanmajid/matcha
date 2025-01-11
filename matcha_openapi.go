@@ -39,6 +39,11 @@ func (r *MatchaOpenAPI) Documentation(pattern string, metadata openapi.Meta) {
 	r.matcha.Get(pattern, openAPIHandler)
 }
 
+func (r *MatchaOpenAPI) Reference(pattern string, specUrl string) {
+	r.matcha.Get("/reference", func(w http.ResponseWriter, r *http.Request) {
+	})
+}
+
 // Serve mux on a given local address
 func (r *MatchaOpenAPI) Serve(addr string) {
 	r.matcha.Serve(addr)
