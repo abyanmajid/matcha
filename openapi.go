@@ -1,11 +1,15 @@
 package matcha
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/abyanmajid/matcha/internal"
 	"github.com/abyanmajid/matcha/logger"
 	"github.com/abyanmajid/matcha/openapi"
+	"github.com/abyanmajid/matcha/reference"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -39,9 +43,17 @@ func (r *MatchaOpenAPI) Documentation(pattern string, metadata openapi.Meta) {
 	r.matcha.Get(pattern, openAPIHandler)
 }
 
-func (r *MatchaOpenAPI) Reference(pattern string, specUrl string) {
-	r.matcha.Get("/reference", func(w http.ResponseWriter, r *http.Request) {
+func (r *MatchaOpenAPI) Reference(pattern string, options *reference.Options) {
+	r.matcha.Get(pattern, func(w http.ResponseWriter, r *http.Request) {
+		html, err := reference.ScalarHTML(options, r)
+		if err != nil {
+			logger.Error("Something went wrong while trying to render your API reference: %v", err)
+			internal.WriteErrorJSON(w, errors.New("failed to render api reference"), http.StatusInternalServerError)
+		}
+
+		fmt.Fprintln(w, html)
 	})
+
 }
 
 // Serve mux on a given local address

@@ -18,7 +18,7 @@ type Operation struct {
 	Description string            `json:"description,omitempty"`
 	Parameters  []*Parameter      `json:"parameters,omitempty"`
 	RequestBody *RequestBody      `json:"requestBody,omitempty"`
-	Response    *map[int]Response `json:"response,omitempty"`
+	Response    *map[int]Response `json:"responses,omitempty"`
 }
 
 type Parameter struct {
