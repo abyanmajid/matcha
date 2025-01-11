@@ -157,11 +157,11 @@ func defaultOptions(option Options) *Options {
 	}
 
 	if returnOptions.Layout == "" {
-		returnOptions.Layout = LayoutModern
+		returnOptions.Layout = LayoutClassic
 	}
 
 	if returnOptions.Theme == "" {
-		returnOptions.Theme = ThemeAlternate
+		returnOptions.Theme = ThemeKepler
 	}
 
 	return &returnOptions

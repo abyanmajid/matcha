@@ -26,8 +26,7 @@ type Resource struct {
 }
 
 func NewResource[Req any, Res any](name string, routeDoc ResourceDoc, handler func(c *ctx.Request[Req]) *ctx.Response[Res]) Resource {
-	operationSpec := NewOperation(routeDoc.Summary, routeDoc.Description, routeDoc.Schema.RequestBody, routeDoc.Schema.Response)
-
+	operationSpec := NewOperation(routeDoc.Summary, routeDoc.Description, routeDoc.Schema.Parameters, routeDoc.Schema.RequestBody, routeDoc.Schema.Response)
 	handlerFunc := internal.NewHandler[Req, Res](handler)
 
 	return Resource{

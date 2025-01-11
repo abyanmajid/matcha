@@ -16,7 +16,7 @@ type Path map[string]Operation
 type Operation struct {
 	Summary     string            `json:"summary,omitempty"`
 	Description string            `json:"description,omitempty"`
-	Parameters  []*Parameter      `json:"parameters,omitempty"`
+	Parameters  []Parameter       `json:"parameters"`
 	RequestBody *RequestBody      `json:"requestBody,omitempty"`
 	Response    *map[int]Response `json:"responses,omitempty"`
 }
