@@ -6,17 +6,17 @@ import (
 	"strings"
 )
 
-func convertMapToSchema(fieldTypes map[string]string) *Schema {
-	properties := make(map[string]*Schema)
+func convertMapToSchema(fieldTypes map[string]string) *ContentSchema {
+	properties := make(map[string]*ContentSchema)
 
 	for fieldName, fieldType := range fieldTypes {
-		fieldSchema := &Schema{
+		fieldSchema := &ContentSchema{
 			Type: getOpenAPIType(fieldType),
 		}
 		properties[fieldName] = fieldSchema
 	}
 
-	return &Schema{
+	return &ContentSchema{
 		Type:       "object",
 		Properties: properties,
 	}
@@ -56,7 +56,7 @@ func convertStructTypeToMap(t interface{}) map[string]string {
 			field := val.Field(i)
 
 			jsonTag := field.Tag.Get("json")
-			fieldName := field.Name
+			fieldName := strings.ToLower(field.Name)
 
 			if jsonTag != "" && jsonTag != "-" {
 				tagParts := strings.Split(jsonTag, ",")

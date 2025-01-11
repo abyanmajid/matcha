@@ -39,10 +39,10 @@ type Response struct {
 }
 
 type MediaType struct {
-	Schema *Schema `json:"schema,omitempty"`
+	ContentSchema *ContentSchema `json:"ContentSchema,omitempty"`
 }
 
-type Schema struct {
-	Type       string             `json:"type,omitempty"`
-	Properties map[string]*Schema `json:"properties,omitempty"`
+type ContentSchema struct {
+	Type       string                    `json:"type,omitempty"`
+	Properties map[string]*ContentSchema `json:"properties,omitempty"`
 }

@@ -86,5 +86,6 @@ func GetPortFromAddr(addr string) (string, error) {
 
 func PrintIntro() {
 	figure.NewColorFigure("matcha", "puffy", "green", true).Print()
-	fmt.Println("\n")
+	fmt.Println()
+	fmt.Println()
 }

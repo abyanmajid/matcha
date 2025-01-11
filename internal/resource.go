@@ -1,12 +1,9 @@
-package matcha
+package internal
 
 import (
 	"encoding/json"
 	"errors"
 	"net/http"
-
-	"github.com/abyanmajid/matcha/internal"
-	"github.com/abyanmajid/matcha/openapi"
 )
 
 // Resource represents an HTTP resource with a specific route and handler.
@@ -15,13 +12,6 @@ import (
 type Resource struct {
 	Route   string
 	Handler http.HandlerFunc
-}
-
-// OpenAPIResource represents a Matcha resource with an OpenAPI specification.
-// It contains an operation document and the associated route and handler.
-type OpenAPIResource struct {
-	Doc      openapi.Operation
-	Resource Resource
 }
 
 // Response is a generic struct that encapsulates a response of type Res.
@@ -45,7 +35,7 @@ type Response[Res any] struct {
 //
 // Returns:
 //   - A pointer to a Response of type Res.
-type Handler[Req any, Res any] func(r *http.Request, body Req) *Response[Res]
+type Handler[Req any, Res any] func(c *Ctx[Req]) *Response[Res]
 
 // NewResource creates a new Resource with the specified route pattern and handler.
 // The handler is a generic function that takes an HTTP request and a request body of type Req,
@@ -76,23 +66,31 @@ func NewResource[Req any, Res any](routePattern string, handler Handler[Req, Res
 
 		if !isEmptyStruct {
 			if r.ContentLength == 0 {
-				internal.WriteErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
+				WriteErrorJSON(w, errors.New("missing request body"), http.StatusBadRequest)
 				return
 			}
 
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
-				internal.WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
+				WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
 				return
 			}
 		}
 
-		res := handler(r, reqBody)
+		res := handler(&Ctx[Req]{
+			Request:  r,
+			Response: w,
+			Cookies: Cookies{
+				Request:  r,
+				Response: w,
+			},
+			Body: reqBody,
+		})
 		if res.Error != nil {
-			internal.WriteErrorJSON(w, res.Error, http.StatusBadRequest)
+			WriteErrorJSON(w, res.Error, http.StatusBadRequest)
 			return
 		}
 
-		internal.WriteJSON(w, res.Response, res.StatusCode)
+		WriteJSON(w, res.Response, res.StatusCode)
 	}
 
 	return &Resource{

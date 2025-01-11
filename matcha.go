@@ -14,6 +14,10 @@ type Matcha struct {
 	mux *chi.Mux
 }
 
+type Ctx[Request any] internal.Ctx[Request]
+
+type Response[Response any] internal.Ctx[Response]
+
 // New creates and returns a new instance of .Mux by initializing
 // and configuring the  router.
 func New() *Matcha {

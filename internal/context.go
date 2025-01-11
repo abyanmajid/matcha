@@ -1,4 +1,4 @@
-package matcha
+package internal
 
 import (
 	"encoding/json"
