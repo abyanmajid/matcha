@@ -12,12 +12,25 @@ type MatchaOpenAPI struct {
 	docs   openapi.OpenAPIDocs
 }
 
+// NewOpenAPI creates a new instance of MatchaOpenAPI.
+// It initializes the Matcha with OpenAPI features.
+//
+// Returns:
+//
+//	*MatchaOpenAPI: A pointer to the newly created MatchaOpenAPI instance.
 func NewOpenAPI() *MatchaOpenAPI {
 	return &MatchaOpenAPI{
 		matcha: New(),
 	}
 }
 
+// Documentation sets up the OpenAPI documentation for the given pattern and metadata.
+// It initializes the OpenAPI documentation using the provided metadata and creates a new handler for it.
+// The handler is then registered to the matcha router with the specified pattern.
+//
+// Parameters:
+//   - pattern: The URL pattern where the OpenAPI documentation will be accessible.
+//   - metadata: The metadata used to generate the OpenAPI documentation.
 func (r *MatchaOpenAPI) Documentation(pattern string, metadata openapi.Metadata) {
 	r.docs = openapi.NewDocs(metadata)
 	openAPIHandler := openapi.NewHandler(r.docs)

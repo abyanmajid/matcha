@@ -19,8 +19,8 @@ type ApiResources struct {
 	login *matcha.Resource
 }
 
-func createApiResources() *ApiResources {
-	return &ApiResources{
+func createApiResources() ApiResources {
+	return ApiResources{
 		login: matcha.NewResource("/login", LoginHandler),
 	}
 }
@@ -34,9 +34,9 @@ func LoginHandler(r *http.Request, body LoginRequest) *matcha.Response[LoginResp
 }
 
 func main() {
-	mux := matcha.New()
+	app := matcha.New()
 
 	resources := createApiResources()
 
-	mux.Post(resources.login.Route, resources.login.Handler)
+	app.Post(resources.login.Route, resources.login.Handler)
 }

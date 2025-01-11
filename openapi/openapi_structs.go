@@ -1,14 +1,5 @@
 package openapi
 
-import (
-	"sync"
-)
-
-type OpenAPIHandler struct {
-	mu   sync.Mutex
-	Docs OpenAPIDocs
-}
-
 type OpenAPIDocs struct {
 	OpenAPI string          `json:"openapi"`
 	Info    Info            `json:"info"`
@@ -54,5 +45,4 @@ type MediaType struct {
 type Schema struct {
 	Type       string             `json:"type,omitempty"`
 	Properties map[string]*Schema `json:"properties,omitempty"`
-	Required   []string           `json:"required,omitempty"`
 }

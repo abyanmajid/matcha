@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/abyanmajid/matcha/internal"
+	"github.com/abyanmajid/matcha/openapi"
 )
 
 // Resource represents an HTTP resource with a specific route and handler.
@@ -16,7 +17,12 @@ type Resource struct {
 	Handler http.HandlerFunc
 }
 
-type NoRequest struct{}
+// OpenAPIResource represents a Matcha resource with an OpenAPI specification.
+// It contains an operation document and the associated route and handler.
+type OpenAPIResource struct {
+	Doc      openapi.Operation
+	Resource Resource
+}
 
 // Response is a generic struct that encapsulates a response of type Res.
 // It includes the actual response data, an HTTP status code, and an error if one occurred.
