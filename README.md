@@ -18,7 +18,17 @@
 
 **Opting out of OpenAPI:** You can alternatively use the base `Matcha` (`matcha.New()`) router, which doesn't require you to write OpenAPI documentation for your routes.
 
-**Packages:** Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inherits all functionalities of [Chi](https://github.dev/go-chi/chi). Apart from that, however, Matcha also wires together much of the tooling you might need to create a production-ready server: OpenAPI specification and API reference ([matcha/openapi](https://github.com/abyanmajid/matcha/tree/master/openapi)), input validation ([matcha/validation](https://github.com/abyanmajid/matcha/tree/master/validation)), in-memory and KV-store ratelimit ([matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache)), SMTP emails ([matcha/email](https://github.com/abyanmajid/matcha/tree/master/email)), JSON Web Tokens ([matcha/jwt](https://github.com/abyanmajid/matcha/tree/master/jwt)), logging ([matcha/logging](https://github.com/abyanmajid/matcha/tree/master/logging))
+## Packages
+
+Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inherits all functionalities of [Chi](https://github.com/go-chi/chi) and [chi/middleware](https://github.com/go-chi/chi/tree/master/middleware). However, Matcha also wires together much of the tooling you might need to create a production-ready server:
+
+- OpenAPI specification ([matcha/openapi](https://github.com/abyanmajid/matcha/tree/master/openapi)),
+- API reference ([matcha/reference](#))
+- Input validation ([matcha/validation](https://github.com/abyanmajid/matcha/tree/master/validation))
+- In-memory and Redis caching ([matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache))
+- SMTP emails ([matcha/email](https://github.com/abyanmajid/matcha/tree/master/email))
+- JSON Web Tokens ([matcha/jwt](https://github.com/abyanmajid/matcha/tree/master/jwt))
+- Logging ([matcha/logging](https://github.com/abyanmajid/matcha/tree/master/logging))
 
 ## Usage
 
@@ -30,4 +40,4 @@ WIP.
 
 ## License
 
-WIP.
+Matcha is licensed under GPL 3.0.
