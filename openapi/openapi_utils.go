@@ -1,6 +1,7 @@
 package openapi
 
 import (
+	"fmt"
 	"reflect"
 	"strings"
 )
@@ -66,4 +67,12 @@ func convertStructTypeToMap(t interface{}) map[string]string {
 		}
 	}
 	return result
+}
+
+func enforceStructParam(t interface{}) error {
+	val := reflect.TypeOf(t)
+	if val.Kind() != reflect.Struct {
+		return fmt.Errorf("parameter must be a struct, but got %s", val.Kind())
+	}
+	return nil
 }

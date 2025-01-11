@@ -1,0 +1,134 @@
+package openapi
+
+import (
+	"net/http"
+
+	"github.com/abyanmajid/matcha/internal"
+)
+
+type Metadata struct {
+	OpenAPI        string
+	PackageName    string
+	PackageVersion string
+}
+
+// NewDocs creates a new OpenAPIDocs instance using the provided metadata.
+// It initializes the OpenAPI version and the Info section with the package name and version.
+//
+// Parameters:
+//   - metadata: Metadata containing OpenAPI version, package name, and package version.
+//
+// Returns:
+//   - OpenAPIDocs: A new instance of OpenAPIDocs populated with the provided metadata.
+func NewDocs(metadata Metadata) OpenAPIDocs {
+	return OpenAPIDocs{
+		OpenAPI: metadata.OpenAPI,
+		Info: Info{
+			Title:   metadata.PackageName,
+			Version: metadata.PackageVersion,
+		},
+	}
+}
+
+// NewHandler creates a new HTTP handler function that serves the provided OpenAPI documentation.
+// It writes the OpenAPI documentation as a JSON response with an HTTP status code of 200 (OK).
+//
+// Parameters:
+//   - docs: OpenAPIDocs containing the OpenAPI documentation to be served.
+//
+// Returns:
+//   - http.HandlerFunc: An HTTP handler function that serves the OpenAPI documentation.
+func NewHandler(docs OpenAPIDocs) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		internal.WriteJSON(w, docs, http.StatusOK)
+	}
+}
+
+func NewSchema(schemaType interface{}) (*Schema, error) {
+	err := enforceStructParam(schemaType)
+	if err != nil {
+		return nil, err
+	}
+	typeMap := convertStructTypeToMap(schemaType)
+	parsedSchema := convertMapToSchema(typeMap)
+	return parsedSchema, nil
+}
+
+func NewRequestBody(requestPayloadType interface{}) (*RequestBody, error) {
+	requestSchema, err := NewSchema(requestPayloadType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &RequestBody{
+		Required: true,
+		Content:  jsonContent(requestSchema),
+	}, nil
+}
+
+func NewResponse(responsePayloadType interface{}, description string) (*Response, error) {
+	responseSchema, err := NewSchema(responsePayloadType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Response{
+		Description: description,
+		Content:     jsonContent(responseSchema),
+	}, nil
+}
+
+func NewOperation(summary string, description string, requestBody RequestBody, response map[int]Response, parameters []Parameter) *Operation {
+	return &Operation{
+		Summary:     summary,
+		Description: description,
+		Parameters:  parameters,
+		RequestBody: requestBody,
+		Response:    response,
+	}
+}
+
+type paramOptionGetter func(name string, description string) Parameter
+
+type paramOptions struct {
+	Query    paramOptionGetter
+	Header   paramOptionGetter
+	Path     paramOptionGetter
+	FormData paramOptionGetter
+	Cookie   paramOptionGetter
+}
+
+var Param = paramOptions{
+	Query: func(name string, description string) Parameter {
+		return createOpenAPIParam("query", name, description)
+	},
+	Header: func(name string, description string) Parameter {
+		return createOpenAPIParam("header", name, description)
+	},
+	Path: func(name string, description string) Parameter {
+		return createOpenAPIParam("path", name, description)
+	},
+	FormData: func(name string, description string) Parameter {
+		return createOpenAPIParam("formData", name, description)
+	},
+	Cookie: func(name string, description string) Parameter {
+		return createOpenAPIParam("cookie", name, description)
+	},
+}
+
+func jsonContent(schema *Schema) map[string]*MediaType {
+	return map[string]*MediaType{
+		"application/json": {
+			Schema: schema,
+		},
+	}
+}
+
+func createOpenAPIParam(in string, name string, description string) Parameter {
+	return Parameter{
+		In:          in,
+		Name:        name,
+		Description: description,
+		Required:    true,
+	}
+}
