@@ -2,7 +2,9 @@ package matcha
 
 import (
 	"net/http"
+	"strings"
 
+	"github.com/abyanmajid/matcha/logger"
 	"github.com/abyanmajid/matcha/openapi"
 	"github.com/go-chi/chi/v5"
 )
@@ -30,7 +32,7 @@ func New() *MatchaOpenAPI {
 // Parameters:
 //   - pattern: The URL pattern where the OpenAPI documentation will be accessible.
 //   - metadata: The metadata used to generate the OpenAPI documentation.
-func (r *MatchaOpenAPI) Documentation(pattern string, metadata openapi.Metadata) {
+func (r *MatchaOpenAPI) Documentation(pattern string, metadata openapi.Meta) {
 	r.docs = openapi.NewDocs(metadata)
 	openAPIHandler := openapi.NewHandler(r.docs)
 
@@ -90,8 +92,28 @@ func (r *MatchaOpenAPI) Delete(pattern string, handlerFn http.HandlerFunc) {
 
 // Get adds the route `pattern` that matches a GET http method to
 // execute the `handlerFn` http.HandlerFunc.
-func (r *MatchaOpenAPI) Get(pattern string, handlerFn http.HandlerFunc) {
-	r.matcha.Get(pattern, handlerFn)
+func (r *MatchaOpenAPI) Get(pattern string, resource *openapi.Resource) {
+	r.registerOpenAPIDoc(pattern, "get", resource)
+	r.matcha.Get(pattern, resource.Handler)
+}
+
+func (r *MatchaOpenAPI) registerOpenAPIDoc(pattern string, method string, resource *openapi.Resource) {
+	logger.Debug("Registering OpenAPI specification for resource: %s", resource.Name)
+
+	if strings.ToLower(method) == "get" {
+		if resource.Doc.RequestBody != nil {
+			logger.Error("Found request body specification for 'GET' resource %s. Removing request body...", resource.Name)
+			resource.Doc.RequestBody = nil
+		}
+	}
+
+	openApiPath := convertDynamicPathToOpenAPI(pattern)
+	_, pathExists := r.docs.Paths[openApiPath]
+	if !pathExists {
+		r.docs.Paths[openApiPath] = map[string]openapi.Operation{}
+	}
+
+	r.docs.Paths[openApiPath][method] = resource.Doc
 }
 
 // Head adds the route `pattern` that matches a HEAD http method to
@@ -178,4 +200,14 @@ func (r *MatchaOpenAPI) Group(fn func(r Matcha)) MatchaOpenAPI {
 // if you define two Mount() routes on the exact same pattern the mount will panic.
 func (r *MatchaOpenAPI) Mount(pattern string, handler http.Handler) {
 	r.matcha.Mount(pattern, handler)
+}
+
+func convertDynamicPathToOpenAPI(path string) string {
+	parts := strings.Split(path, "/")
+	for i, part := range parts {
+		if strings.HasPrefix(part, ":") {
+			parts[i] = "{" + strings.TrimPrefix(part, ":") + "}"
+		}
+	}
+	return strings.Join(parts, "/")
 }

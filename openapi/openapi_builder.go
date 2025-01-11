@@ -6,7 +6,7 @@ import (
 	"github.com/abyanmajid/matcha/internal"
 )
 
-type Metadata struct {
+type Meta struct {
 	OpenAPI        string
 	PackageName    string
 	PackageVersion string
@@ -20,13 +20,14 @@ type Metadata struct {
 //
 // Returns:
 //   - OpenAPIDocs: A new instance of OpenAPIDocs populated with the provided metadata.
-func NewDocs(metadata Metadata) OpenAPIDocs {
+func NewDocs(metadata Meta) OpenAPIDocs {
 	return OpenAPIDocs{
 		OpenAPI: metadata.OpenAPI,
 		Info: Info{
 			Title:   metadata.PackageName,
 			Version: metadata.PackageVersion,
 		},
+		Paths: map[string]Path{},
 	}
 }
 
@@ -44,6 +45,12 @@ func NewHandler(docs OpenAPIDocs) http.HandlerFunc {
 	}
 }
 
+func NewPath(pattern string, operation Operation) map[string]Operation {
+	return map[string]Operation{
+		pattern: operation,
+	}
+}
+
 func NewSchema(schemaType interface{}) (*ContentSchema, error) {
 	err := enforceStructParam(schemaType)
 	if err != nil {
@@ -58,8 +65,8 @@ func NewOperation(summary string, description string, requestBody RequestBody, r
 	return &Operation{
 		Summary:     summary,
 		Description: description,
-		RequestBody: requestBody,
-		Response:    response,
+		RequestBody: &requestBody,
+		Response:    &response,
 	}
 }
 
@@ -96,6 +103,5 @@ func createOpenAPIParam(in string, name string, description string) Parameter {
 		In:          in,
 		Name:        name,
 		Description: description,
-		Required:    true,
 	}
 }

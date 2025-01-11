@@ -38,3 +38,8 @@ func Trace(format string, args ...any) {
 func Error(format string, args ...any) {
 	syslogToStdout(errorColor("ERROR"), format, args...)
 }
+
+func Fatal(format string, args ...any) {
+	Error(format, args...)
+	os.Exit(1)
+}

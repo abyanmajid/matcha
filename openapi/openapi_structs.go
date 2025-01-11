@@ -14,23 +14,21 @@ type Info struct {
 type Path map[string]Operation
 
 type Operation struct {
-	Summary     string           `json:"summary,omitempty"`
-	Description string           `json:"description,omitempty"`
-	Parameters  []Parameter      `json:"parameters,omitempty"`
-	RequestBody RequestBody      `json:"requestBody,omitempty"`
-	Response    map[int]Response `json:"response,omitempty"`
+	Summary     string            `json:"summary,omitempty"`
+	Description string            `json:"description,omitempty"`
+	Parameters  []*Parameter      `json:"parameters,omitempty"`
+	RequestBody *RequestBody      `json:"requestBody,omitempty"`
+	Response    *map[int]Response `json:"response,omitempty"`
 }
 
 type Parameter struct {
 	In          string `json:"in"`
 	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	Required    bool   `json:"required"`
+	Description string `json:"description"`
 }
 
 type RequestBody struct {
-	Required bool                  `json:"required"`
-	Content  map[string]*MediaType `json:"content,omitempty"`
+	Content map[string]*MediaType `json:"content,omitempty"`
 }
 
 type Response struct {
@@ -39,7 +37,7 @@ type Response struct {
 }
 
 type MediaType struct {
-	ContentSchema *ContentSchema `json:"ContentSchema,omitempty"`
+	ContentSchema *ContentSchema `json:"schema,omitempty"`
 }
 
 type ContentSchema struct {

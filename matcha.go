@@ -18,6 +18,7 @@ type Matcha struct {
 // NewBase creates and returns a new instance of the basic Matcha Router by initializing
 // and configuring the  router.
 func NewBase() *Matcha {
+	internal.PrintIntro()
 	mux := chi.NewRouter()
 	mux.Use(defaultPanicRecovery)
 
@@ -37,8 +38,6 @@ func (r *Matcha) Serve(addr string) {
 		logger.Error(err.Error())
 		return
 	}
-
-	internal.PrintIntro()
 
 	logger.Info("A Matcha web server is now running on port %s... 🌿", port)
 
