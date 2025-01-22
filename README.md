@@ -34,11 +34,10 @@ Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inh
 
 - OpenAPI specification builder ([matcha/openapi](https://github.com/abyanmajid/matcha/tree/master/openapi)),
 - API reference using Scalar ([matcha/reference](#))
-- Input validation ([matcha/validation](https://github.com/abyanmajid/matcha/tree/master/validation))
 - In-memory and Redis caching ([matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache))
 - SMTP emails ([matcha/email](https://github.com/abyanmajid/matcha/tree/master/email))
-- JSON Web Tokens ([matcha/jwt](https://github.com/abyanmajid/matcha/tree/master/jwt))
-- Logging ([matcha/logging](https://github.com/abyanmajid/matcha/tree/master/logging))
+- Security; JSON Web Tokens, encryption, hashing ([matcha/security](https://github.com/abyanmajid/matcha/tree/master/security))
+- Logging ([matcha/logger](https://github.com/abyanmajid/matcha/tree/master/logger))
 
 ## Usage
 
