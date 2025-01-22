@@ -64,14 +64,14 @@ func main() {
   app := matcha.New()
 
   app.Documentation("/docs", openapi.Meta{
-		OpenAPI:        "3.0.0",
-		PackageName:    "My API",
-		PackageVersion: "0.1.0",
-	})
+    OpenAPI:        "3.0.0",
+    PackageName:    "My API",
+    PackageVersion: "0.1.0",
+  })
 
-	app.Reference("/reference", &reference.Options{
-		Source: "/docs",
-	})
+  app.Reference("/reference", &reference.Options{
+    Source: "/docs",
+  })
 
   // We'll define our resources here
   // ...
