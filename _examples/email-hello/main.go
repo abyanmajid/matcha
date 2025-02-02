@@ -8,7 +8,7 @@ func main() {
 		Port:     "1025",
 		Username: "mailhog",
 		Password: "mailhog",
-	}, "_examples/hello-email/templates")
+	}, "_examples/email-hello/templates")
 
 	type EmailData struct {
 		Name string
