@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 
 	"github.com/abyanmajid/matcha/security"
@@ -9,15 +8,15 @@ import (
 
 func main() {
 	secretKey := []byte("12345678901234567890123456789012")
-
 	plaintext := []byte("Hello, world!")
-	ciphertext, err := security.EncryptSymmetric(plaintext, secretKey, nil)
+
+	ciphertext, err := security.Encrypt(plaintext, secretKey, nil)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("Encrypted Data:", base64.StdEncoding.EncodeToString(ciphertext))
+	fmt.Println("Encrypted Data:", security.EncodeBase64(ciphertext))
 
-	decryptedText, err := security.DecryptSymmetric(ciphertext, secretKey)
+	decryptedText, err := security.Decrypt(ciphertext, secretKey)
 	if err != nil {
 		panic(err)
 	}

@@ -7,11 +7,30 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
 	"io"
 )
+
+func EncodeBase64(data []byte) string {
+	return base64.StdEncoding.EncodeToString(data)
+}
+
+func DecodeBase64(data string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(data)
+}
+
+// Encrypt is a simple API wrapper for EncryptSymmetric that allows for optional IV.
+func Encrypt(plaintext []byte, key []byte, iv []byte) ([]byte, error) {
+	return EncryptSymmetric(plaintext, key, iv)
+}
+
+// Decrypt is a simple API wrapper for DecryptSymmetric that allows for optional IV.
+func Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+	return DecryptSymmetric(ciphertext, key)
+}
 
 // EncryptSymmetric encrypts data using AES-256-GCM with a user-provided key and IV.
 // If no IV is provided, a random one is generated.
