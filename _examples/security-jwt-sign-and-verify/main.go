@@ -15,7 +15,7 @@ func main() {
 		"exp":  time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	key := []byte("your-256-bit-secret")
+	key := []byte("your-secret-key")
 	signedToken, err := token.Sign(key)
 	if err != nil {
 		panic(err)

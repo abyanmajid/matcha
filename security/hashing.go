@@ -4,168 +4,131 @@ import (
 	"crypto/hmac"
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/base64"
+	"errors"
 	"fmt"
-	"hash"
-
-	"golang.org/x/crypto/blake2b"
-	"golang.org/x/crypto/sha3"
+	"strconv"
+	"strings"
 )
-
-type HashAlgorithm string
 
 const (
-	SHA256   HashAlgorithm = "sha256"
-	SHA3_256 HashAlgorithm = "sha3-256"
-	BLAKE2b  HashAlgorithm = "blake2b"
+	DefaultCost = 10
+	MinCost     = 4
+	MaxCost     = 31
+	SaltLength  = 16
+	HashLength  = 32
+	HashVersion = "v1"
 )
 
-type Hasher interface {
-	Hash(data []byte) []byte
-	HashString(data string) string
+var (
+	ErrPasswordTooLong           = errors.New("password length exceeds the maximum allowed")
+	ErrMismatchedHashAndPassword = errors.New("hashed password does not match the provided password")
+	ErrInvalidCost               = errors.New("cost is out of range")
+	ErrHashTooShort              = errors.New("hash is too short")
+)
+
+type HashedPassword struct {
+	Hash       string
+	Salt       string
+	Cost       int
+	HashPrefix string
 }
 
-type hasherImpl struct {
-	algorithm HashAlgorithm
+func Hash(password []byte) (*HashedPassword, error) {
+	return HashWithCost(password, DefaultCost)
 }
 
-func NewHasher(algorithm HashAlgorithm) Hasher {
-	return &hasherImpl{
-		algorithm: algorithm,
-	}
-}
-
-func (h *hasherImpl) Hash(data []byte) []byte {
-	var hashFunc hash.Hash
-
-	switch h.algorithm {
-	case SHA256:
-		hashFunc = sha256.New()
-	case SHA3_256:
-		hashFunc = sha3.New256()
-	case BLAKE2b:
-		hashFunc, _ = blake2b.New256(nil)
-	default:
-		panic("unsupported hashing algorithm")
+func HashWithCost(password []byte, cost int) (*HashedPassword, error) {
+	if len(password) > 72 {
+		return nil, ErrPasswordTooLong
 	}
 
-	hashFunc.Write(data)
-	return hashFunc.Sum(nil)
-}
-
-func (h *hasherImpl) HashString(data string) string {
-	hashBytes := h.Hash([]byte(data))
-	return fmt.Sprintf("%x", hashBytes)
-}
-
-type KeyedHasher interface {
-	Hash(data []byte, key []byte) []byte
-	HashString(data string, key string) string
-}
-
-type keyedHasherImpl struct {
-	algorithm HashAlgorithm
-}
-
-func NewKeyedHasher(algorithm HashAlgorithm) KeyedHasher {
-	return &keyedHasherImpl{
-		algorithm: algorithm,
-	}
-}
-
-func (h *keyedHasherImpl) Hash(data []byte, key []byte) []byte {
-	var hashFunc func() hash.Hash
-
-	switch h.algorithm {
-	case SHA256:
-		hashFunc = sha256.New
-	case SHA3_256:
-		hashFunc = sha3.New256
-	case BLAKE2b:
-		hashFunc = func() hash.Hash {
-			h, _ := blake2b.New256(key)
-			return h
-		}
-	default:
-		panic("unsupported hashing algorithm")
+	if cost < MinCost || cost > MaxCost {
+		return nil, ErrInvalidCost
 	}
 
-	mac := hmac.New(hashFunc, key)
-	mac.Write(data)
-	return mac.Sum(nil)
-}
-
-func (h *keyedHasherImpl) HashString(data string, key string) string {
-	hashBytes := h.Hash([]byte(data), []byte(key))
-	return fmt.Sprintf("%x", hashBytes)
-}
-
-type SaltedHasher interface {
-	Hash(data []byte) ([]byte, []byte)
-	HashString(data string) (string, string)
-}
-
-type saltedHasherImpl struct {
-	algorithm HashAlgorithm
-}
-
-func NewSaltedHasher(algorithm HashAlgorithm) SaltedHasher {
-	return &saltedHasherImpl{
-		algorithm: algorithm,
+	salt, err := generateSalt()
+	if err != nil {
+		return nil, err
 	}
+
+	hash := deriveKey(password, salt, cost)
+
+	hashString := fmt.Sprintf("%s$%d$%s$%s", HashVersion, cost, salt, hash)
+
+	return &HashedPassword{
+		Hash:       hashString,
+		Salt:       salt,
+		Cost:       cost,
+		HashPrefix: HashVersion,
+	}, nil
 }
 
-func (h *saltedHasherImpl) Hash(data []byte) ([]byte, []byte) {
-	salt := make([]byte, 16)
+func VerifyHash(hashedPassword, password []byte) error {
+	hashStr := string(hashedPassword)
+	parsedHash, err := parseHash(hashStr)
+	if err != nil {
+		return err
+	}
+
+	derivedHash := deriveKey(password, parsedHash.Salt, parsedHash.Cost)
+
+	if subtle.ConstantTimeCompare([]byte(derivedHash), []byte(parsedHash.Hash)) == 1 {
+		return nil
+	}
+
+	return ErrMismatchedHashAndPassword
+}
+
+func generateSalt() (string, error) {
+	salt := make([]byte, SaltLength)
 	_, err := rand.Read(salt)
 	if err != nil {
-		panic(err)
+		return "", err
+	}
+	return base64.RawStdEncoding.EncodeToString(salt), nil
+}
+
+func deriveKey(password []byte, salt string, cost int) string {
+	iterations := 1 << uint(cost)
+	hash := hmac.New(sha256.New, []byte(password))
+	hash.Write([]byte(salt))
+	hashSum := hash.Sum(nil)
+
+	for i := 0; i < iterations-1; i++ {
+		hash = hmac.New(sha256.New, hashSum)
+		hashSum = hash.Sum(nil)
 	}
 
-	var hashFunc hash.Hash
+	return fmt.Sprintf("%x", hashSum)
+}
 
-	switch h.algorithm {
-	case SHA256:
-		hashFunc = sha256.New()
-	case SHA3_256:
-		hashFunc = sha3.New256()
-	case BLAKE2b:
-		hashFunc, _ = blake2b.New256(nil)
-	default:
-		panic("unsupported hashing algorithm")
+func parseHash(hash string) (*HashedPassword, error) {
+	parts := strings.Split(hash, "$")
+	if len(parts) != 4 {
+		return nil, ErrHashTooShort
 	}
 
-	hashFunc.Write(salt)
-	hashFunc.Write(data)
-	return hashFunc.Sum(nil), salt
-}
+	version := parts[0]
+	cost, err := strconv.Atoi(parts[1])
+	if err != nil {
+		return nil, ErrInvalidCost
+	}
+	salt := parts[2]
+	hashStr := parts[3]
 
-func (h *saltedHasherImpl) HashString(data string) (string, string) {
-	hashBytes, salt := h.Hash([]byte(data))
-	return fmt.Sprintf("%x", hashBytes), base64.StdEncoding.EncodeToString(salt)
-}
+	if version != HashVersion {
+		return nil, fmt.Errorf("unsupported hash version: %s", version)
+	}
+	if cost < MinCost || cost > MaxCost {
+		return nil, ErrInvalidCost
+	}
 
-func Hash(data string) string {
-	hasher := NewHasher(SHA256)
-	return hasher.HashString(data)
-}
-
-func VerifyHash(data string, hash string) bool {
-	return Hash(data) == hash
-}
-
-func HashWithKey(data string, key string) string {
-	keyedHasher := NewKeyedHasher(SHA256)
-	return keyedHasher.HashString(data, key)
-}
-
-func HashWithSalt(data string) (string, string) {
-	saltedHasher := NewSaltedHasher(SHA256)
-	return saltedHasher.HashString(data)
-}
-
-func VerifyHashWithSalt(data string, hash string, salt string) bool {
-	saltedHasher := NewSaltedHasher(SHA256)
-	computedHash, _ := saltedHasher.HashString(data)
-	return computedHash == hash
+	return &HashedPassword{
+		Hash:       hashStr,
+		Salt:       salt,
+		Cost:       cost,
+		HashPrefix: version,
+	}, nil
 }
