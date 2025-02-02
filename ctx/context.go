@@ -14,10 +14,6 @@ import (
 // and response objects, as well as any additional data needed for processing
 // the request.
 //
-// Type Parameters:
-//
-//	Req - The type of the body data.
-//
 // Fields:
 //
 //	Request  - The HTTP request object.

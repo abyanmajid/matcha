@@ -6,6 +6,14 @@ import (
 	"net/smtp"
 )
 
+// Config holds SMTP server configuration details.
+//
+// Fields:
+//
+//	Host - SMTP server hostname
+//	Port - SMTP server port
+//	Username - SMTP username for authentication
+//	Password - SMTP password for authentication
 type Config struct {
 	Host     string
 	Port     string
@@ -13,20 +21,23 @@ type Config struct {
 	Password string
 }
 
-type Client struct {
+type client struct {
 	templateDir string
 	config      Config
 }
 
-func NewClient(config Config, templateDir string) *Client {
-	return &Client{
+// Newclient initializes and returns a new email client.
+func NewClient(config Config, templateDir string) *client {
+	return &client{
 		templateDir: templateDir,
 		config:      config,
 	}
 }
 
-func (c *Client) SendEmail(to []string, subject string, templateName string, data interface{}) error {
+// SendEmail sends an email using a specified template and data.
+func (c *client) SendEmail(to []string, subject string, templateName string, data interface{}) error {
 	templatePath := c.templateDir + "/" + templateName + ".html"
+
 	tmpl, err := template.ParseFiles(templatePath)
 	if err != nil {
 		return err
@@ -40,7 +51,7 @@ func (c *Client) SendEmail(to []string, subject string, templateName string, dat
 
 	headers := make(map[string]string)
 	headers["From"] = c.config.Username
-	headers["To"] = to[0]
+	headers["To"] = to[0] // only show the first recipient is shown in headers
 	headers["Subject"] = subject
 	headers["MIME-Version"] = "1.0"
 	headers["Content-Type"] = "text/html; charset=UTF-8"
