@@ -6,7 +6,7 @@ import (
 	"net/smtp"
 )
 
-type SmtpConfig struct {
+type Config struct {
 	Host     string
 	Port     string
 	Username string
@@ -15,10 +15,10 @@ type SmtpConfig struct {
 
 type Client struct {
 	templateDir string
-	config      SmtpConfig
+	config      Config
 }
 
-func NewClient(config SmtpConfig, templateDir string) *Client {
+func NewClient(config Config, templateDir string) *Client {
 	return &Client{
 		templateDir: templateDir,
 		config:      config,
