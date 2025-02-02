@@ -33,10 +33,10 @@
 Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inherits all functionalities of [Chi](https://github.com/go-chi/chi) and [chi/middleware](https://github.com/go-chi/chi/tree/master/middleware). However, Matcha also wires together much of the tooling you might need to create a production-ready server:
 
 - OpenAPI specification builder ([matcha/openapi](https://github.com/abyanmajid/matcha/tree/master/openapi)),
-- API reference using Scalar ([matcha/reference](#))
+- API reference using Scalar ([matcha/reference](https://github.com/abyanmajid/matcha/tree/master/reference))
 - In-memory and Redis caching ([matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache))
 - SMTP emails ([matcha/email](https://github.com/abyanmajid/matcha/tree/master/email))
-- Security; JSON Web Tokens, encryption, hashing ([matcha/security](https://github.com/abyanmajid/matcha/tree/master/security))
+- Security; JSON Web Tokens, encryption, and hashing ([matcha/security](https://github.com/abyanmajid/matcha/tree/master/security))
 - Logging ([matcha/logger](https://github.com/abyanmajid/matcha/tree/master/logger))
 
 ## Usage
@@ -145,10 +145,10 @@ func LoginResource() (*openapi.Resource, error) {
     Summary: "Log in a user by issuing a token",
     Description: "Check if there's a matching user, compare password with its hash, sign and return a JSON Web Token (JWT)",
     Schema: openapi.Schema{
-      RequestBody: []openapi.RequestBody{
+      RequestBody: openapi.RequestBody{
         Content: openapi.Json(requestSchema),
       },
-      Responses: map[int]openapi.Responses{
+      Responses: map[int]openapi.Response{
         http.StatusOK: {
           Description: "Successfully logged user in"
           Content: openapi.Json(responseSchema),
@@ -170,7 +170,7 @@ Create your typed handler:
 ```go
 func LoginHandler(c *ctx.Request[LoginRequest]) *ctx.Response[LoginResponse] {
   // specify your handler logic here...
-  return &ctx.Response{
+  return &ctx.Response[LoginResponse]{
     Response: LoginResponse{
       Token: "a secure token",
     },
@@ -227,7 +227,7 @@ import (
 func main() {
   // ...
 
-  resources, err := createResources()
+  resources, err := createApiResources()
   if err != nil {
     logger.Fatal("Failed to create resources: %v", err)
   }
