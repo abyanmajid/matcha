@@ -18,7 +18,7 @@ type RedisMetrics struct {
 	Evictions int
 }
 
-func NewRedisRedisCache(addr, password string, db int) *RedisCache {
+func NewRedisCache(addr, password string, db int) *RedisCache {
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: password,
