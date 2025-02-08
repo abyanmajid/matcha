@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "www/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "installCommand": "cd www && npm install",
+  "buildCommand": "cd www && npm run build",
+  "outputDirectory": "www/.next"
+}
