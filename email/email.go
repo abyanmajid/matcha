@@ -21,21 +21,21 @@ type Config struct {
 	Password string
 }
 
-type client struct {
+type Client struct {
 	templateDir string
 	config      Config
 }
 
 // Newclient initializes and returns a new email client.
-func NewClient(config Config, templateDir string) *client {
-	return &client{
+func NewClient(config Config, templateDir string) *Client {
+	return &Client{
 		templateDir: templateDir,
 		config:      config,
 	}
 }
 
 // SendEmail sends an email using a specified template and data.
-func (c *client) SendEmail(to []string, subject string, templateName string, data interface{}) error {
+func (c *Client) SendEmail(to []string, subject string, templateName string, data interface{}) error {
 	templatePath := c.templateDir + "/" + templateName + ".html"
 
 	tmpl, err := template.ParseFiles(templatePath)
