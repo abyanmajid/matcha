@@ -29,6 +29,7 @@ Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inh
 - In-memory and Redis caching ([matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache))
 - SMTP emails ([matcha/email](https://github.com/abyanmajid/matcha/tree/master/email))
 - Security; JSON Web Tokens, encryption, and hashing ([matcha/security](https://github.com/abyanmajid/matcha/tree/master/security))
+- Type-safe Env ([matcha/env](https://github.com/abyanmajid/matcha/tree/master/env))
 - Logging ([matcha/logger](https://github.com/abyanmajid/matcha/tree/master/logger))
 
 ## Usage

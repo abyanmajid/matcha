@@ -21,19 +21,15 @@ func Load(config interface{}) error {
 		field := configType.Field(i)
 		fieldValue := configValue.Field(i)
 
-		// Get the `name` tag (e.g., `name:"PORT"`)
 		envKey := field.Tag.Get("name")
 		if envKey == "" {
 			return fmt.Errorf("field %s is missing a `name` tag", field.Name)
 		}
 
-		// Get the `required` tag (e.g., `required:"true"`)
 		required := field.Tag.Get("required") == "true"
 
-		// Get the `default` tag (e.g., `default:"8080"`)
 		defaultValue := field.Tag.Get("default")
 
-		// Get the value from the environment
 		envValue, exists := os.LookupEnv(envKey)
 		if !exists {
 			if required && defaultValue == "" {
@@ -42,7 +38,6 @@ func Load(config interface{}) error {
 			envValue = defaultValue
 		}
 
-		// Set the value on the struct field
 		if err := setField(fieldValue, envValue, field.Type.Kind()); err != nil {
 			return fmt.Errorf("failed to set field %s: %v", field.Name, err)
 		}
@@ -51,7 +46,6 @@ func Load(config interface{}) error {
 	return nil
 }
 
-// setField sets the value of a struct field based on the environment variable value.
 func setField(field reflect.Value, value string, kind reflect.Kind) error {
 	switch kind {
 	case reflect.String:

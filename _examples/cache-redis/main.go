@@ -56,8 +56,8 @@ func main() {
 		fmt.Println("key3 not found or expired")
 	}
 
-	metrics := c.RedisMetrics()
-	fmt.Println("Redis cache metrics:", metrics)
+	metrics := c.Metrics()
+	fmt.Println("Cache metrics:", metrics)
 
 	c.Stop()
 }

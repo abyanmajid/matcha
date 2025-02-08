@@ -52,6 +52,6 @@ func (c *RedisCache) Stop() {
 	c.client.Close()
 }
 
-func (c *RedisCache) RedisMetrics() RedisMetrics {
+func (c *RedisCache) Metrics() RedisMetrics {
 	return RedisMetrics{}
 }
