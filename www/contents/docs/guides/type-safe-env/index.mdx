@@ -1,0 +1,49 @@
+---
+title: Type-safe Env
+description: This guide will show you load your env variables into a struct.
+---
+
+## Create Your Environment File
+
+Create a new file called `.env` and add your variables. For this example, we'll use the following variables:
+
+```plaintext
+PORT=8080
+DEBUG=true
+DATABASE_URL=postgres://user:pass@localhost:5432/dbname
+```
+
+## Loading Your Environment Variables
+
+You can use `env.Dotenv` to load your environment variables from a file, such as `.env`. Afterward, you can use `env.Load` to load the variables into a struct.
+
+```go
+package main
+
+import (
+  "fmt"
+  "github.com/abyanmajid/matcha/env"
+)
+
+type Config struct {
+  Port        int    `name:"PORT" default:"3000"`
+  Debug       bool   `name:"DEBUG" default:"false"`
+  DatabaseURL string `name:"DATABASE_URL" required:"true"`
+}
+
+func main() {
+  if err := env.Dotenv(".env"); err != nil {
+    fmt.Println("Warning: No .env file found.")
+  }
+
+  var config Config
+  if err := env.Load(&config); err != nil {
+    fmt.Println("Error loading configuration:", err)
+    return
+  }
+
+  fmt.Printf("Config: %+v\n", config)
+}
+```
+
+

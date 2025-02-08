@@ -1,0 +1,92 @@
+---
+title: OpenAPI
+description: This guide will show you how to build an OpenAPI specification for your Matcha resources.
+---
+
+## Define your OpenAPI specification in Go code
+
+```go
+type LoginRequest struct {
+  Email string
+  Password string
+}
+
+type LoginResponse struct {
+  Token string
+}
+
+func LoginHandler(c *ctx.Request[LoginRequest]) *ctx.Response[LoginResponse] {
+  // specify your handler logic here...
+  // ...
+
+  return &ctx.Response[LoginResponse]{
+    Response: LoginResponse{
+      Token: "a secure token",
+    },
+    StatusCode: http.StatusOK,
+    Error: nil,
+  }
+}
+
+func LoginResource() (*openapi.Resource, error) {
+  requestSchema, err := openapi.NewSchema(LoginRequest{})
+  if err != nil {
+    return nil, err
+  }
+
+  responseSchema, err := openapi.NewSchema(LoginResponse{})
+  if err != nil {
+    return nil, err
+  }
+
+  doc := openapi.ResourceDoc{
+    Summary: "Log in a user by issuing a token",
+    Description: "Check if there's a matching user, compare password with its hash, sign and return a JSON Web Token (JWT)",
+    Schema: openapi.Schema{
+      RequestBody: openapi.RequestBody{
+        Content: openapi.Json(requestSchema),
+      },
+      Responses: map[int]openapi.Response{
+        http.StatusOK: {
+          Description: "Successfully logged user in"
+          Content: openapi.Json(responseSchema),
+        },
+        http.StatusUnauthorized: {
+          Description: "Invalid credentials.",
+          Content: openapi.Json(openapi.SimpleErrorSchema()),
+        },
+      },
+    },
+  }
+
+  resource := openapi.NewResource("Login", doc, LoginHandler)
+
+  return &resource, nil
+}
+```
+
+## Serve the OpenAPI specification
+
+```go
+func main() {
+  app := matcha.New()
+
+  app.Documentation("/docs", openapi.Meta{
+    OpenAPI:        "3.0.0",
+    PackageName:    "My API",
+    PackageVersion: "0.1.0",
+  })
+
+  login, err := LoginResource()
+  if err != nil {
+    return nil, err
+  }
+
+  app.Get("/login", login)
+
+  app.Serve(":8080")
+}
+```
+
+You can now go to `http://localhost:8080/docs` to see the OpenAPI specification.
+

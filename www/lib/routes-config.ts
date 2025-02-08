@@ -58,22 +58,15 @@ export const ROUTES: EachRoute[] = [
         href: "/email",
       },
       {
+        title: "Type-safe Env",
+        href: "/type-safe-env",
+      },
+      {
         title: "Logging",
         href: "/logging",
       },
     ],
   },
-  {
-    title: "Other",
-    href: "/other",
-    noLink: true,
-    items: [
-      {
-        title: "API Reference",
-        href: "/reference",
-      }
-    ],
-  }
 ];
 
 type Page = { title: string; href: string };

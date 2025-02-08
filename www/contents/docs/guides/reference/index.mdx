@@ -1,0 +1,64 @@
+---
+title: Reference
+description: This guide will show you how to document your API using your OpenAPI specification and the Scalar Web UI.
+---
+
+## Serve a Scalar Web UI
+
+Simply use `app.Reference` to serve the Scalar Web UI.
+
+```go
+package main
+
+import (
+  "github.com/abyanmajid/matcha"
+  "github.com/abyanmajid/matcha/openapi"
+  "github.com/abyanmajid/matcha/reference"
+)
+
+func main() {
+  app := matcha.New()
+
+  app.Documentation("/docs", openapi.Meta{
+    OpenAPI:        "3.0.0",
+    PackageName:    "My API",
+    PackageVersion: "0.1.0",
+  })
+
+  app.Reference("/reference", &reference.Options{
+    Source: "/docs",
+  })
+
+  // Register your resources here
+  // ...
+
+  app.Serve(":8080")
+}
+```
+
+## Optional Configurations
+
+| Field                 | Type                  | Default Value        |
+|-----------------------|----------------------|----------------------|
+| `PageTitle`          | `string`              | `"API Reference"`    |
+| `CDN`                | `string`              | `DefaultCDN`        |
+| `Theme`              | `ThemeId`             | `ThemeKepler`       |
+| `Layout`             | `ReferenceLayoutType` | `LayoutClassic`     |
+| `Source`             | `string`              | `""`                |
+| `SpecContent`        | `interface{}`         | `nil`               |
+| `Proxy`              | `string`              | `""`                |
+| `IsEditable`         | `bool`                | `false`             |
+| `ShowSidebar`        | `bool`                | `true`              |
+| `HideModels`         | `bool`                | `false`             |
+| `HideDownloadButton` | `bool`                | `false`             |
+| `DarkMode`           | `bool`                | `true`              |
+| `SearchHotKey`       | `string`              | `"/"`               |
+| `MetaData`           | `string`              | `""`                |
+| `HiddenClients`      | `[]string`            | `nil`               |
+| `CustomCss`          | `string`              | `""`                |
+| `Authentication`     | `string`              | `""`                |
+| `PathRouting`        | `string`              | `""`                |
+| `BaseServerURL`      | `string`              | `""`                |
+| `WithDefaultFonts`   | `bool`                | `false`             |
+
+
