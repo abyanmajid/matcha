@@ -1,0 +1,23 @@
+---
+title: Introduction
+description: This section provides an overview of Matcha.
+---
+
+**Matcha** is an schema-first Golang REST framework built on top of the [Chi](https://github.com/go-chi/chi) router, where *"schema-first"* here implies:
+
+1. Your HTTP handlers must be two types via generics. One for the request and one for the response.
+2. Your HTTP routes must have an OpenAPI specification before you can register them as a resource.
+
+## Packages
+
+| **Package**                   | **Description**                                          |
+|-------------------------------|----------------------------------------------------------|
+| [matcha](https://github.com/abyanmajid/matcha)                   | Routing (direct fork of [chi](https://github.com/go-chi/chi))                |
+| [matcha/middleware](https://github.com/abyanmajid/matcha/tree/master/middleware)                   | Middlewares (direct fork of [chi/middleware](https://github.com/go-chi/chi))                |
+| [matcha/ctx](https://github.com/abyanmajid/matcha/tree/master/ctx)                  | Type-strict context for request and response    |
+| [matcha/openapi](https://github.com/abyanmajid/matcha/tree/master/openapi)                  | OpenAPI specification builder using pure Go code    |
+| [matcha/reference](https://github.com/abyanmajid/matcha/tree/master/reference)                  | API reference using the [Scalar](https://github.com/ScalaR/ScalaR) client                        |
+| [matcha/security](https://github.com/abyanmajid/matcha/tree/master/security) | JSON Web Tokens (JWT), hashing, and encryption                     |
+| [matcha/email](https://github.com/abyanmajid/matcha/tree/master/email) | Sending emails over SMTP using HTML templates                   |
+| [matcha/cache](https://github.com/abyanmajid/matcha/tree/master/cache) | In-memory and Redis caching      |
+| [matcha/logger](https://github.com/abyanmajid/matcha/tree/master/logger)       | Simple logging with syslogs format          |
