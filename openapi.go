@@ -103,8 +103,9 @@ func (r *MatchaOpenAPI) Connect(pattern string, handlerFn http.HandlerFunc) {
 
 // Delete adds the route `pattern` that matches a DELETE http method to
 // execute the `handlerFn` http.HandlerFunc.
-func (r *MatchaOpenAPI) Delete(pattern string, handlerFn http.HandlerFunc) {
-	r.matcha.Delete(pattern, handlerFn)
+func (r *MatchaOpenAPI) Delete(pattern string, resource *openapi.Resource) {
+	r.registerOpenAPIDoc(pattern, "delete", nil)
+	r.matcha.Delete(pattern, resource.Handler)
 }
 
 // Get adds the route `pattern` that matches a GET http method to
@@ -147,20 +148,22 @@ func (r *MatchaOpenAPI) Options(pattern string, handlerFn http.HandlerFunc) {
 
 // Patch adds the route `pattern` that matches a PATCH http method to
 // execute the `handlerFn` http.HandlerFunc.
-func (r *MatchaOpenAPI) Patch(pattern string, handlerFn http.HandlerFunc) {
-	r.matcha.Patch(pattern, handlerFn)
+func (r *MatchaOpenAPI) Patch(pattern string, resource *openapi.Resource) {
+	r.registerOpenAPIDoc(pattern, "patch", resource)
+	r.matcha.Patch(pattern, resource.Handler)
 }
 
 // Post adds the route `pattern` that matches a POST http method to
 // execute the `handlerFn` http.HandlerFunc.
-func (r *MatchaOpenAPI) Post(pattern string, handlerFn http.HandlerFunc) {
-	r.matcha.Post(pattern, handlerFn)
+func (r *MatchaOpenAPI) Post(pattern string, resource *openapi.Resource) {
+	r.registerOpenAPIDoc(pattern, "post", nil)
+	r.matcha.Post(pattern, resource.Handler)
 }
 
 // Put adds the route `pattern` that matches a PUT http method to
 // execute the `handlerFn` http.HandlerFunc.
-func (r *MatchaOpenAPI) Put(pattern string, handlerFn http.HandlerFunc) {
-	r.matcha.Put(pattern, handlerFn)
+func (r *MatchaOpenAPI) Put(pattern string, resource *openapi.Resource) {
+	r.matcha.Put(pattern, resource.Handler)
 }
 
 // Trace adds the route `pattern` that matches a TRACE http method to
