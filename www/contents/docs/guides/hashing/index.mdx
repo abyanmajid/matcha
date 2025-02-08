@@ -1,0 +1,25 @@
+---
+title: Hashing
+description: This guide will show you how to work with hashes using our security package.
+---
+
+## Hashing
+
+```go
+value := []byte("my-value")
+hashedValue, err := security.Hash(value)
+```
+
+## Hashing with a Custom Cost
+
+```go
+value := []byte("my-value")
+hashedValue, err := security.HashWithCost(value, 12)
+```
+
+## Verifying
+
+```go
+value := []byte("my-value")
+err := security.VerifyHash([]byte(hashedValue.Hash), value)
+```
