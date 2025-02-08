@@ -42,8 +42,8 @@ func main() {
 |-----------------------|----------------------|----------------------|
 | `PageTitle`          | `string`              | `"API Reference"`    |
 | `CDN`                | `string`              | `DefaultCDN`        |
-| `Theme`              | `ThemeId`             | `ThemeKepler`       |
-| `Layout`             | `ReferenceLayoutType` | `LayoutClassic`     |
+| `Theme`              | `"default"`, `"alternate"`, `"moon"`, `"purple"`, `"solarized"`, `"bluePlanet"`, `"deepSpace"`, `"saturn"`, `"kepler"`, `"mars"`, `"none"`, `""` | `"kepler"` |
+| `Layout`             | `"modern"`, `"classic"` | `"classic"` |
 | `Source`             | `string`              | `""`                |
 | `SpecContent`        | `interface{}`         | `nil`               |
 | `Proxy`              | `string`              | `""`                |
@@ -51,14 +51,12 @@ func main() {
 | `ShowSidebar`        | `bool`                | `true`              |
 | `HideModels`         | `bool`                | `false`             |
 | `HideDownloadButton` | `bool`                | `false`             |
-| `DarkMode`           | `bool`                | `true`              |
-| `SearchHotKey`       | `string`              | `"/"`               |
-| `MetaData`           | `string`              | `""`                |
-| `HiddenClients`      | `[]string`            | `nil`               |
-| `CustomCss`          | `string`              | `""`                |
-| `Authentication`     | `string`              | `""`                |
-| `PathRouting`        | `string`              | `""`                |
-| `BaseServerURL`      | `string`              | `""`                |
-| `WithDefaultFonts`   | `bool`                | `false`             |
-
-
+| `DarkMode`          | `bool`                | `true`              |
+| `SearchHotKey`      | `string`              | `"/"`               |
+| `MetaData`          | `string`              | `""`                |
+| `HiddenClients`     | `[]string`            | `nil`               |
+| `CustomCss`        | `string`              | `""`                |
+| `Authentication`   | `string`              | `""`                |
+| `PathRouting`     | `string`              | `""`                |
+| `BaseServerURL`   | `string`              | `""`                |
+| `WithDefaultFonts` | `bool`                | `false`             |

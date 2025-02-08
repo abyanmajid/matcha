@@ -1,0 +1,47 @@
+---
+title: JSON Web Token (JWT)
+description: This guide will show you how to work with JSON Web Tokens using our security package.
+---
+
+## Supported Algorithms
+
+- HMAC: `security.HS256`, `security.HS384`, `security.HS512`
+- RSA: `security.RS256`, `security.RS384`, `security.RS512`
+- ECDSA: `security.ES256`, `security.ES384`, `security.ES512`
+- EdDSA: `security.EdDSA`
+
+## Creating a JWT
+
+```go
+token := security.NewJWT(security.JwtClaims{
+	"sub":  "1234567890",
+	"name": "John Doe",
+	"iat":  time.Now().Unix(),
+	"exp":  time.Now().Add(time.Hour * 24).Unix(),
+})
+```
+
+## Signing a JWT
+
+```go
+// // The default signing algorithm is HS256
+// // You can set a different algorithm like so:
+// token.SetAlgorithm(security.RS256)
+
+secret := []byte("your-secret-key")
+signedToken, err := token.Sign(secret)
+if err != nil {
+	panic(err)
+}
+```
+
+## Verifying a JWT
+
+```go
+verifiedToken, err := security.VerifyJWT(signedToken, key)
+if err != nil {
+	panic(err)
+}
+
+fmt.Println("Verified Claims:", verifiedToken.JwtClaims)
+```
