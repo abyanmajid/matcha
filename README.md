@@ -14,6 +14,17 @@
 
 <br>
 
+<div align="center">
+  <a href="https://matcha.abydyl.net" target="_blank" rel="noopener noreferrer">
+  <img
+    src="https://img.shields.io/badge/DOCS-MATCHA.ABYDYL.NET-555555?style=for-the-badge&logo=read-the-docs&logoColor=white&labelColor=333333&color=777777"
+    alt="Docs"
+  />
+</a>
+</div>
+
+<br>
+
 ## Overview
 
 **Matcha is an opinionated approach to building web servers:** You are encouraged to design and document your API resources before implementing the handler logic. The `MatchaOpenAPI` (`matcha.New()`) router has chaining path-defining methods (e.g., `GET`) which, for every route, requires you to (1) strictly explicitly define the schema for the request and response payloads, and (2) write an OpenAPI documentation in Go code.
