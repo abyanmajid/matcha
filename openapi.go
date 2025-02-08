@@ -104,7 +104,7 @@ func (r *MatchaOpenAPI) Connect(pattern string, handlerFn http.HandlerFunc) {
 // Delete adds the route `pattern` that matches a DELETE http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (r *MatchaOpenAPI) Delete(pattern string, resource *openapi.Resource) {
-	r.registerOpenAPIDoc(pattern, "delete", nil)
+	r.registerOpenAPIDoc(pattern, "delete", resource)
 	r.matcha.Delete(pattern, resource.Handler)
 }
 
@@ -156,13 +156,14 @@ func (r *MatchaOpenAPI) Patch(pattern string, resource *openapi.Resource) {
 // Post adds the route `pattern` that matches a POST http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (r *MatchaOpenAPI) Post(pattern string, resource *openapi.Resource) {
-	r.registerOpenAPIDoc(pattern, "post", nil)
+	r.registerOpenAPIDoc(pattern, "post", resource)
 	r.matcha.Post(pattern, resource.Handler)
 }
 
 // Put adds the route `pattern` that matches a PUT http method to
 // execute the `handlerFn` http.HandlerFunc.
 func (r *MatchaOpenAPI) Put(pattern string, resource *openapi.Resource) {
+	r.registerOpenAPIDoc(pattern, "put", resource)
 	r.matcha.Put(pattern, resource.Handler)
 }
 
