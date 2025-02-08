@@ -15,11 +15,65 @@ export const ROUTES: EachRoute[] = [
     items: [
       { title: "Introduction", href: "/introduction" },
       {
-        title: "Installation",
-        href: "/installation",
+        title: "Quickstart",
+        href: "/quickstart",
       },
     ],
   },
+  {
+    title: "Guides",
+    href: "/guides",
+    noLink: true,
+    items: [
+      {
+        title: "Routing and Middlewares",
+        href: "/routing-and-middlewares",
+      },
+      {
+        title: "OpenAPI",
+        href: "/openapi",
+      },
+      {
+        title: "Reference",
+        href: "/reference",
+      },
+      {
+        title: "JSON Web Token (JWT)",
+        href: "/jwt",
+      },
+      {
+        title: "Hashing",
+        href: "/hashing",
+      },
+      {
+        title: "Encryption",
+        href: "/encryption",
+      },
+      {
+        title: "Caching",
+        href: "/caching",
+      },
+      {
+        title: "Email",
+        href: "/email",
+      },
+      {
+        title: "Logging",
+        href: "/logging",
+      },
+    ],
+  },
+  {
+    title: "Other",
+    href: "/other",
+    noLink: true,
+    items: [
+      {
+        title: "API Reference",
+        href: "/reference",
+      }
+    ],
+  }
 ];
 
 type Page = { title: string; href: string };

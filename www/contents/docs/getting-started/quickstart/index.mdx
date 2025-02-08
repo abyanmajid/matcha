@@ -1,0 +1,185 @@
+---
+title: Quickstart
+description: This section guides you on setting up Matcha project from scratch
+---
+
+## Setup
+
+Follow the steps below to create a new, simple Matcha project. Alternatively, you can clone our [example starter project](https://github.com/abyanmajid/matcha-starter).
+
+<Stepper>
+  <StepperItem title="Step 1: Create a new golang project">
+    ```plaintext
+    go mod init
+    ```
+  </StepperItem>
+
+  <StepperItem title="Step 2: Add Matcha as a dependency">
+    ```plaintext
+    go get -u github.com/abyanmajid/matcha
+    ```
+  </StepperItem>
+
+  <StepperItem title="Step 3: Initialize a Matcha router">
+    Create `main.go`, and in it, define the `main` function as follows:
+
+    ```go
+    package main
+
+    import (
+      "github.com/abyanmajid/matcha"
+      "github.com/abyanmajid/matcha/openapi"
+      "github.com/abyanmajid/matcha/reference"
+    )
+
+    func main() {
+      app := matcha.New()
+
+      app.Documentation("/docs", openapi.Meta{
+        OpenAPI:        "3.0.0",
+        PackageName:    "My API",
+        PackageVersion: "0.1.0",
+      })
+
+      app.Reference("/reference", &reference.Options{
+        Source: "/docs",
+      })
+
+      // STEP 6: Define our resources here
+      // ...
+
+      app.Serve(":8080")
+    }
+    ```
+  </StepperItem>
+
+  <StepperItem title="Step 4: Define a type-safe handler">
+    Suppose we want to create a login resource. First, define the request and response types in `main.go`:
+
+    ```go
+    import (
+      // ...
+      "github.com/abyanmajid/matcha/ctx"
+    )
+
+    type LoginRequest struct {
+      Email string 
+      Password string
+    }
+
+    type LoginResponse struct {
+      Token string
+    }
+
+    func LoginHandler(c *ctx.Request[LoginRequest]) *ctx.Response[LoginResponse] {
+      // specify your handler logic here...
+      // ...
+
+      return &ctx.Response[LoginResponse]{
+        Response: LoginResponse{
+          Token: "a secure token",
+        },
+        StatusCode: http.StatusOK,
+        Error: nil,
+      }
+    }
+    ```
+  </StepperItem>
+
+  <StepperItem title="Step 5: Create a Matcha resource with OpenAPI specification">
+    The `MatchaOpenAPI` router only serves a Mathca resource with an OpenAPI specification.
+
+    ```go
+    func LoginResource() (*openapi.Resource, error) {
+      requestSchema, err := openapi.NewSchema(LoginRequest{})
+      if err != nil {
+        return nil, err
+      }
+
+      responseSchema, err := openapi.NewSchema(LoginResponse{})
+      if err != nil {
+        return nil, err
+      }
+
+      doc := openapi.ResourceDoc{
+        Summary: "Log in a user by issuing a token",
+        Description: "Check if there's a matching user, compare password with its hash, sign and return a JSON Web Token (JWT)",
+        Schema: openapi.Schema{
+          RequestBody: openapi.RequestBody{
+            Content: openapi.Json(requestSchema),
+          },
+          Responses: map[int]openapi.Response{
+            http.StatusOK: {
+              Description: "Successfully logged user in"
+              Content: openapi.Json(responseSchema),
+            },
+            http.StatusUnauthorized: {
+              Description: "Invalid credentials.",
+              Content: openapi.Json(openapi.SimpleErrorSchema()),
+            },
+          },
+        },
+      }
+
+      resource := openapi.NewResource("Login", doc, LoginHandler)
+
+      return &resource, nil
+    }
+    ```
+  </StepperItem>
+
+   <StepperItem title="Step 6: Serve the Matcha resource">
+    Add the resource we just defined to handle the `/login` route:
+
+    ```go
+    import (
+      // ...
+      "github.com/abyanmajid/matcha/logger"
+    )
+
+    type ApiResources struct {
+      Login *openapi.Resource
+    }
+
+    func createApiResources() (*ApiResources, error) {
+      login, err := LoginResource()
+      if err != nil {
+        return nil, err
+      }
+
+      // Instantiate your other resources here
+      // ...
+
+      return &ApiResources{
+        Login: login,
+        // ...
+      }, nil
+    }
+
+    func main() {
+      // ...
+
+      resources, err := createApiResources()
+      if err != nil {
+        logger.Fatal("Failed to create resources: %v", err)
+      }
+
+      app.Get("/login", resources.Login)
+
+      // ...
+    }
+    ```
+  </StepperItem>
+
+  <StepperItem title="Step 7: Run the application">
+    ```plaintext
+    go run .
+    ```
+  </StepperItem>
+</Stepper>
+
+We're done! Now, if you'd visit `http://localhost:8080/docs`, you'll see the OpenAPI specification for the login resource we just defined. You can also go to `http://localhost:8080/reference` to see the generated Scalar API reference documentation.
+
+## Full code
+
+The full source code is available [here.](https://github.com/abyanmajid/matcha/tree/master/_examples/openapi-and-reference)
