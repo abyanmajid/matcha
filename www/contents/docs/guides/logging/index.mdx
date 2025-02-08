@@ -1,0 +1,28 @@
+---
+title: Logging
+description: This guide will show you how to work with logging using our logger package.
+---
+
+## Basic API
+
+```go
+logger.Info("your-message")
+logger.Debug("your-message")
+logger.Trace("your-message")
+logger.Error("your-message")
+logger.Fatal("your-message") // This will terminate the program
+```
+
+## Formatting
+
+```go
+logger.Info("Starting application with user: %s, version: %.2f", "Alice", 1.23)
+logger.Debug("Debugging mode enabled for feature: %s", "UserAuthentication")
+logger.Trace("Tracking request ID: %s, Time: %s", "req-12345", time.Now().Format(time.RFC3339))
+logger.Error("Failed to open file: %s, Error: %v", "/path/to/file.txt", fmt.Errorf("file not found"))
+logger.Fatal("Critical failure, shutting down system: %s", "Database unreachable")
+```
+
+
+
+

@@ -1,0 +1,33 @@
+---
+title: Caching
+description: This guide will show you how to work with caching using our cache package.
+---
+
+## Initializing a Cache Client
+
+```go
+// Params:
+// - maxSize: the maximum number of items in the cache
+c := cache.NewMemoryCache(3)
+
+// Params:
+// - addr: the address of the Redis server
+// - password: the password of the Redis server
+// - db: the database number of the Redis server
+c := cache.NewRedisCache("redis-address", "redis-password", 0)
+```
+
+## Common API
+
+```go
+c.Set(key, value, ttl)
+c.Get(key)
+c.Delete(key)
+c.Metrics()
+c.Stop()
+```
+
+for `key: string`, `value: interface{}`, `ttl: time.Duration`
+
+
+

@@ -1,0 +1,58 @@
+---
+title: Email
+description: This guide will show you how to work with emails using our email package.
+---
+
+## Establish an Email SMTP Client
+
+```go
+// Params:
+// - config: the SMTP configuration
+// - templatesDir: the directory containing your email html templates
+emailClient := email.NewClient(email.Config{
+	Host:     "your-smtp-host",
+	Port:     "your-smtp-port",
+	Username: "your-smtp-username",
+	Password: "your-smtp-password",
+}, "templates")
+```
+
+## Send an Email
+
+```go
+type EmailData struct {
+	Name string
+}
+
+// Params:
+// - to: the recipient email address
+// - subject: the subject of the email
+// - templateName: the name of the template to use
+// - data: the data to pass to the template
+emailClient.SendEmail([]string{"recipient@example.com"}, "Hello!", "hello", EmailData{
+	Name: "Abyan Majid",
+})
+```
+
+Now, create a new `templates/hello.html` file, and add your HTML markup. Here's an example:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 400px; margin: auto; }
+        .header { font-size: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">🍵 Hello {{.Name}}</div>
+        <p>I hope you enjoy Matcha!</p>
+    </div>
+</body>
+</html>
+```
