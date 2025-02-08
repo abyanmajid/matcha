@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/185986c2-a956-490b-920d-0e06ebf6204b" width="40%" alt="matcha">
+  <img src="https://github.com/user-attachments/assets/8f032a92-491e-45fd-9aff-a8e34761e9a5" width="50%" alt="matcha">
 </div>
 
 <div align="center">
@@ -14,19 +14,11 @@
 
 <br>
 
----
-
-<div align="center">
-<strong>CAUTION: THE API IS INCOMPLETE. AS THIS FRAMEWORK IS STILL A WORK IN PROGRESS</strong>
-</div>
-
----
-
 ## Overview
 
-**Matcha is an opinionated approach to building web servers:** You are encouraged to design and document your API resources before implementing the handler logic. The `MatchaOpenAPI` (`matcha.NewOpenAPI()`) router has chaining path-defining methods (e.g., `GET`) which, for every route, requires you to (1) strictly explicitly define the schema for the request and response payloads, and (2) write an OpenAPI documentation in Go code.
+**Matcha is an opinionated approach to building web servers:** You are encouraged to design and document your API resources before implementing the handler logic. The `MatchaOpenAPI` (`matcha.New()`) router has chaining path-defining methods (e.g., `GET`) which, for every route, requires you to (1) strictly explicitly define the schema for the request and response payloads, and (2) write an OpenAPI documentation in Go code.
 
-**Opting out of OpenAPI:** You can alternatively use the base `Matcha` (`matcha.New()`) router, which doesn't require you to write OpenAPI documentation for your routes.
+**Opting out of OpenAPI:** You can alternatively use the base `Matcha` (`matcha.NewBase()`) router, which doesn't require you to write OpenAPI documentation for your routes.
 
 ## Packages
 
@@ -40,8 +32,6 @@ Being a direct fork, Matcha ([matcha](https://github.com/abyanmajid/matcha)) inh
 - Logging ([matcha/logger](https://github.com/abyanmajid/matcha/tree/master/logger))
 
 ## Usage
-
-**CAUTION: THE API IS INCOMPLETE. AS THIS FRAMEWORK IS STILL A WORK IN PROGRESS**
 
 Add Matcha to your Go project:
 
