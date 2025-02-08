@@ -14,7 +14,7 @@ func main() {
 		Name string
 	}
 
-	emailClient.SendEmail([]string{"abyan@abydyl.net"}, "Hello World!", "hello", EmailData{
+	emailClient.SendEmail("sender@example.com", []string{"abyan@abydyl.net"}, "Hello World!", "hello", EmailData{
 		Name: "Abyan Majid",
 	})
 }

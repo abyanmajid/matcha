@@ -4,16 +4,10 @@ import (
 	"bytes"
 	"html/template"
 	"net/smtp"
+	"strings"
 )
 
 // Config holds SMTP server configuration details.
-//
-// Fields:
-//
-//	Host - SMTP server hostname
-//	Port - SMTP server port
-//	Username - SMTP username for authentication
-//	Password - SMTP password for authentication
 type Config struct {
 	Host     string
 	Port     string
@@ -26,7 +20,7 @@ type Client struct {
 	config      Config
 }
 
-// Newclient initializes and returns a new email client.
+// NewClient initializes and returns a new email client.
 func NewClient(config Config, templateDir string) *Client {
 	return &Client{
 		templateDir: templateDir,
@@ -34,8 +28,8 @@ func NewClient(config Config, templateDir string) *Client {
 	}
 }
 
-// SendEmail sends an email using a specified template and data.
-func (c *Client) SendEmail(to []string, subject string, templateName string, data interface{}) error {
+// SendEmail sends an email with a custom sender.
+func (c *Client) SendEmail(from string, to []string, subject string, templateName string, data interface{}) error {
 	templatePath := c.templateDir + "/" + templateName + ".html"
 
 	tmpl, err := template.ParseFiles(templatePath)
@@ -49,12 +43,13 @@ func (c *Client) SendEmail(to []string, subject string, templateName string, dat
 		return err
 	}
 
-	headers := make(map[string]string)
-	headers["From"] = c.config.Username
-	headers["To"] = to[0] // only show the first recipient is shown in headers
-	headers["Subject"] = subject
-	headers["MIME-Version"] = "1.0"
-	headers["Content-Type"] = "text/html; charset=UTF-8"
+	headers := map[string]string{
+		"From":         from, // Allow passing custom sender
+		"To":           strings.Join(to, ", "),
+		"Subject":      subject,
+		"MIME-Version": "1.0",
+		"Content-Type": "text/html; charset=UTF-8",
+	}
 
 	var msg bytes.Buffer
 	for key, value := range headers {
@@ -62,9 +57,14 @@ func (c *Client) SendEmail(to []string, subject string, templateName string, dat
 	}
 	msg.WriteString("\r\n" + body.String())
 
-	auth := smtp.PlainAuth("", c.config.Username, c.config.Password, c.config.Host)
+	// Use authentication only if credentials are provided
+	var auth smtp.Auth
+	if c.config.Username != "" && c.config.Password != "" {
+		auth = smtp.PlainAuth("", c.config.Username, c.config.Password, c.config.Host)
+	}
 
-	err = smtp.SendMail(c.config.Host+":"+c.config.Port, auth, c.config.Username, to, msg.Bytes())
+	// Send email
+	err = smtp.SendMail(c.config.Host+":"+c.config.Port, auth, from, to, msg.Bytes())
 	if err != nil {
 		return err
 	}
