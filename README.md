@@ -242,10 +242,6 @@ func main() {
 
 At this point, you should've created a resource at `/login` of which specification is documented at `/docs` and can be viewed from a reference interface at `/reference`. A rather elegant design, I hope you agree! 😎
 
-## API Reference
-
-WIP.
-
 ## License
 
 Matcha is licensed under GPL 3.0.
