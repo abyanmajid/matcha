@@ -23,7 +23,7 @@ func NewHandler[Req any, Res any](handler func(c *ctx.Request[Req]) *ctx.Respons
 				return
 			}
 
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err == nil {
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				WriteErrorJSON(w, errors.New("invalid request body"), http.StatusBadRequest)
 				return
 			}

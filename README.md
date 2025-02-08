@@ -234,7 +234,7 @@ func main() {
     logger.Fatal("Failed to create resources: %v", err)
   }
 
-  app.Get("/login", resources.Login)
+  app.Post("/login", resources.Login)
 
   // ...
 }

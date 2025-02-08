@@ -82,7 +82,7 @@ func main() {
     return nil, err
   }
 
-  app.Get("/login", login)
+  app.Post("/login", login)
 
   app.Serve(":8080")
 }
