@@ -3,7 +3,7 @@
 </div>
 
 <div align="center">
-  <h1>Matcha: A schema-first REST framework</h1>
+  <h1>Matcha: A Schema-First REST Framework</h1>
 </div>
 
 <div align="center">
