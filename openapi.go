@@ -118,13 +118,6 @@ func (r *MatchaOpenAPI) Get(pattern string, resource *openapi.Resource) {
 func (r *MatchaOpenAPI) registerOpenAPIDoc(pattern string, method string, resource *openapi.Resource) {
 	logger.Debug("Registering OpenAPI specification for resource: %s", resource.Name)
 
-	if strings.ToLower(method) == "get" {
-		if resource.Doc.RequestBody != nil {
-			logger.Error("Found request body specification for 'GET' resource %s. Removing request body...", resource.Name)
-			resource.Doc.RequestBody = nil
-		}
-	}
-
 	openApiPath := convertDynamicPathToOpenAPI(pattern)
 	_, pathExists := r.docs.Paths[openApiPath]
 	if !pathExists {
